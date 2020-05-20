@@ -46,10 +46,10 @@ export default {
       }).then((response) => {
         _this.loading = false
         var json = response.data
-        if (json.isRight == '0') {
+        if (json.isRight === 0) {
           _this.$alert('正确!', '结果')
-          _this.question.a = parseInt(json.a)
-          _this.question.b = parseInt(json.b)
+          _this.question.a = json.a
+          _this.question.b = json.b
         } else {
           _this.$alert('错误!', '结果')
         }
