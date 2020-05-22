@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-menu default-active="/search" mode="horizontal" router>
+    <el-menu :default-active="this.$route.path" mode="horizontal" router>
       <el-menu-item index="/search">课程检索</el-menu-item>
       <el-menu-item index="/program">培养方案</el-menu-item>
     </el-menu>

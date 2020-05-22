@@ -10,33 +10,41 @@
         trigger="click">
 
         <el-table
-          :data="tableData6"
+          :data="myCourseTable"
           :span-method="arraySpanMethod"
           border
           style="width: 100%">
           <el-table-column
-            prop="id"
-            label="ID"
-            width="180">
+            prop="time"
+            label="时间">
           </el-table-column>
           <el-table-column
-            prop="name"
-            label="姓名">
+            prop="mon"
+            label="星期一">
           </el-table-column>
           <el-table-column
-            prop="amount1"
-            sortable
-            label="数值 1">
+            prop="tue"
+            label="星期二">
           </el-table-column>
           <el-table-column
-            prop="amount2"
-            sortable
-            label="数值 2">
+            prop="wed"
+            label="星期三">
           </el-table-column>
           <el-table-column
-            prop="amount3"
-            sortable
-            label="数值 3">
+            prop="thu"
+            label="星期四">
+          </el-table-column>
+          <el-table-column
+            prop="fri"
+            label="星期五">
+          </el-table-column>
+          <el-table-column
+            prop="sat"
+            label="星期六">
+          </el-table-column>
+          <el-table-column
+            prop="sun"
+            label="星期日">
           </el-table-column>
         </el-table>
       </el-popover>
@@ -60,42 +68,66 @@
       :data="tableData5"
       style="width: 100%">
       <el-table-column type="expand">
-        <template slot-scope="props">
-          <el-form label-position="left" inline class="demo-table-expand">
-            <el-form-item label="商品名称">
-              <span>{{ props.row.name }}</span>
-            </el-form-item>
-            <el-form-item label="所属店铺">
-              <span>{{ props.row.shop }}</span>
-            </el-form-item>
-            <el-form-item label="商品 ID">
-              <span>{{ props.row.id }}</span>
-            </el-form-item>
-            <el-form-item label="店铺 ID">
-              <span>{{ props.row.shopId }}</span>
-            </el-form-item>
-            <el-form-item label="商品分类">
-              <span>{{ props.row.category }}</span>
-            </el-form-item>
-            <el-form-item label="店铺地址">
-              <span>{{ props.row.address }}</span>
-            </el-form-item>
-            <el-form-item label="商品描述">
-              <span>{{ props.row.desc }}</span>
-            </el-form-item>
-          </el-form>
-        </template>
+        <el-table
+          :data="tableData6"
+          style="width: 100%">
+          <el-table-column
+            prop="teacher"
+            label="教师"
+            sortable>
+          </el-table-column>
+          <el-table-column
+            prop="courseTime"
+            sortable
+            label="上课时间">
+          </el-table-column>
+          <el-table-column
+            prop="coursePlace"
+            sortable
+            label="上课地点">
+          </el-table-column>
+          <el-table-column
+            prop="examTime"
+            sortable
+            label="考试时间">
+          </el-table-column>
+          <el-table-column
+            prop="remainNum"
+            sortable
+            label="余量">
+          </el-table-column>
+          <el-table-column
+            prop="totalNum"
+            sortable
+            label="容量">
+          </el-table-column>
+          <el-table-column
+            prop="chosenNum"
+            sortable
+            label="待定人数">
+          </el-table-column>
+          <el-table-column
+            prop="op"
+            label="操作">
+            <template slot-scope="scope">
+              <el-button
+                :type="tableData6[scope.$index].chosen ? 'danger' : 'primary'"
+                @click="modifyChosen(scope.$index)">
+                {{tableData6[scope.$index].chosen ? '退选' : '选课'}}</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
       </el-table-column>
       <el-table-column
-        label="商品 ID"
+        label="课程ID"
         prop="id">
       </el-table-column>
       <el-table-column
-        label="商品名称"
+        label="课程名称"
         prop="name">
       </el-table-column>
       <el-table-column
-        label="描述"
+        label="选课状态"
         prop="desc">
       </el-table-column>
     </el-table>
@@ -112,69 +144,62 @@ export default {
       state1: '',
       state2: '',
       tableData5: [{
-        id: '12987122',
-        name: '好滋好味鸡蛋仔',
-        category: '江浙小吃、小吃零食',
-        desc: '荷兰优质淡奶，奶香浓而不腻',
-        address: '上海市普陀区真北路',
-        shop: '王小虎夫妻店',
-        shopId: '10333'
+        id: '21120261',
+        name: '软件工程',
+        desc: '已选'
       }, {
-        id: '12987123',
-        name: '好滋好味鸡蛋仔',
-        category: '江浙小吃、小吃零食',
-        desc: '荷兰优质淡奶，奶香浓而不腻',
-        address: '上海市普陀区真北路',
-        shop: '王小虎夫妻店',
-        shopId: '10333'
+        id: '21120261',
+        name: '软件工程',
+        desc: '已选'
       }, {
-        id: '12987125',
-        name: '好滋好味鸡蛋仔',
-        category: '江浙小吃、小吃零食',
-        desc: '荷兰优质淡奶，奶香浓而不腻',
-        address: '上海市普陀区真北路',
-        shop: '王小虎夫妻店',
-        shopId: '10333'
+        id: '21120261',
+        name: '软件工程',
+        desc: '已选'
       }, {
-        id: '12987126',
-        name: '好滋好味鸡蛋仔',
-        category: '江浙小吃、小吃零食',
-        desc: '荷兰优质淡奶，奶香浓而不腻',
-        address: '上海市普陀区真北路',
-        shop: '王小虎夫妻店',
-        shopId: '10333'
+        id: '21120261',
+        name: '软件工程',
+        desc: '已选'
       }],
       tableData6: [{
-        id: '12987122',
-        name: '王小虎',
-        amount1: '234',
-        amount2: '3.2',
-        amount3: 10
+        teacher: '刘玉生',
+        courseTime: '周一第1,2节',
+        coursePlace: '玉泉曹光彪二期-104(多)',
+        examTime: '2020年6月30日(14:00-16:00)',
+        remainNum: -1,
+        totalNum: 79,
+        chosenNum: 0,
+        chosen: true
       }, {
-        id: '12987123',
-        name: '王小虎',
-        amount1: '165',
-        amount2: '4.43',
-        amount3: 12
+        teacher: '刘玉生',
+        courseTime: '周一第1,2节',
+        coursePlace: '玉泉曹光彪二期-104(多)',
+        examTime: '2020年6月30日(14:00-16:00)',
+        remainNum: -1,
+        totalNum: 79,
+        chosenNum: 0,
+        chosen: true
       }, {
-        id: '12987124',
-        name: '王小虎',
-        amount1: '324',
-        amount2: '1.9',
-        amount3: 9
+        teacher: '刘玉生',
+        courseTime: '周一第1,2节',
+        coursePlace: '玉泉曹光彪二期-104(多)',
+        examTime: '2020年6月30日(14:00-16:00)',
+        remainNum: -1,
+        totalNum: 79,
+        chosenNum: 0,
+        chosen: true
       }, {
-        id: '12987125',
-        name: '王小虎',
-        amount1: '621',
-        amount2: '2.2',
-        amount3: 17
-      }, {
-        id: '12987126',
-        name: '王小虎',
-        amount1: '539',
-        amount2: '4.1',
-        amount3: 15
-      }]
+        teacher: '刘玉生',
+        courseTime: '周一第1,2节',
+        coursePlace: '玉泉曹光彪二期-104(多)',
+        examTime: '2020年6月30日(14:00-16:00)',
+        remainNum: -1,
+        totalNum: 79,
+        chosenNum: 0,
+        chosen: true
+      }],
+      myCourseTable: [
+        {},{},{},{},{},{},{},{},{},{},{},{},{}
+      ]
     };
   },
   methods: {
@@ -255,6 +280,9 @@ export default {
     },
     handleSelect(item) {
       console.log(item);
+    },
+    modifyChosen (index) {
+      this.tableData6[index].chosen = !this.tableData6[index].chosen
     }
   },
   mounted() {

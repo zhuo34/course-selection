@@ -13,18 +13,33 @@ export default new Router({
       path: '/',
       name: 'Home',
       component: Home,
+      redirect: '/search',
       children: [
         {
           path: '/search',
           name: 'SearchView',
-          component: SearchView
+          component: SearchView,
+          meta: {
+            title: '选课界面'
+          }
         },
         {
           path: '/program',
           name: 'ProgramView',
-          component: ProgramView
+          component: ProgramView,
+          meta: {
+            title: '培养方案'
+          }
         }
       ]
+    },
+    {
+      path: '*',
+      name: 'default',
+      redirect: '/',
+      meta: {
+        title: '选课界面'
+      }
     }
   ]
 })
