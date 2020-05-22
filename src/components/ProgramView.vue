@@ -16,8 +16,8 @@
 
 <script>
 export default {
-  name: "ProgramView",
-  data() {
+  name: 'ProgramView',
+  data () {
     return {
       tableData: [{
         date: '2016-05-02',
@@ -40,7 +40,7 @@ export default {
     }
   },
   methods: {
-    delTableRow: function(index){
+    delTableRow: function (index) {
       this.tableData.splice(index, 1)
       this.message = 'delete finished.'
     }
