@@ -169,7 +169,7 @@ export default {
       return row.id
     },
     whichCourseSelected ({rowIndex}) {
-      if (this.tableData6[rowIndex].chosen) {
+      if (this.chosenCourseDetails[rowIndex].chosen) {
         return 'chosen-row'
       } else {
         return ''
@@ -182,7 +182,7 @@ export default {
       }
     },
     modifyChosen (index) {
-      this.tableData6[index].chosen = !this.tableData6[index].chosen
+      this.chosenCourseDetails[index].chosen = !this.chosenCourseDetails[index].chosen
     },
     dropCourse (index) {
 
