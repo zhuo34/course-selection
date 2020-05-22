@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <h1> 1000以内加法 </h1>
     <router-view/>
   </div>
 </template>
