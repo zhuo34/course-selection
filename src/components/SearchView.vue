@@ -66,11 +66,15 @@
 
     <el-table
       :data="tableData5"
-      style="width: 100%">
+      style="width: 100%"
+      :row-key="getRowKeys"
+      :expand-row-keys="expands"
+      @expand-change="expandSelect">
       <el-table-column type="expand">
         <el-table
           :data="tableData6"
-          style="width: 100%">
+          style="width: 100%"
+          :row-class-name="whichCourseSelected">
           <el-table-column
             prop="teacher"
             label="教师"
@@ -143,20 +147,24 @@ export default {
       restaurants: [],
       state1: '',
       state2: '',
+      getRowKeys(row) {
+        return row.id
+      },
+      expands: [],
       tableData5: [{
         id: '21120261',
         name: '软件工程',
         desc: '已选'
       }, {
-        id: '21120261',
+        id: '21120262',
         name: '软件工程',
         desc: '已选'
       }, {
-        id: '21120261',
+        id: '21120263',
         name: '软件工程',
         desc: '已选'
       }, {
-        id: '21120261',
+        id: '21120264',
         name: '软件工程',
         desc: '已选'
       }],
@@ -224,6 +232,20 @@ export default {
         } else if (columnIndex === 1) {
           return [0, 0];
         }
+      }
+    },
+    whichCourseSelected({rowIndex}) {
+      if(this.tableData6[rowIndex].chosen){
+        return 'chosen-row'
+      }
+      else{
+        return ''
+      }
+    },
+    expandSelect(row, expandedRows) {
+      this.expands = []
+      if(expandedRows.length > 0){
+        row ? this.expands.push(row.id) : ''
       }
     },
     loadAll() {
@@ -308,5 +330,8 @@ export default {
   position: absolute;
   right: 0%;
   height: 200px;
+}
+.el-table .chosen-row {
+  background:oldlace;
 }
 </style>
