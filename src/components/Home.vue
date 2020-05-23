@@ -1,6 +1,7 @@
 <template>
   <div>
-    <el-menu :default-active="this.$route.path" mode="horizontal" router>
+    <el-menu :default-active="this.$route.path" mode="horizontal"
+             class="main-menu" router>
       <el-menu-item index="/search">课程检索</el-menu-item>
       <el-menu-item index="/program">培养方案</el-menu-item>
     </el-menu>
@@ -25,5 +26,9 @@ export default {
 }
 .fade-enter, .fade-leave-to{
   opacity: 0;
+}
+.main-menu {
+  margin-top: -30px;
+  margin-bottom: 30px;
 }
 </style>

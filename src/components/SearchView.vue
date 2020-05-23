@@ -1,26 +1,34 @@
 <template>
   <div>
-    <el-row type="flex" justify="space-between">
+    <el-row type="flex" justify="space-around" class="func-row">
       <el-button v-popover:tablepop type="primary" round>显示课表</el-button>
 
       <el-popover ref="tablepop" placement="bottom-start" trigger="click">
-        <el-table :data="courseTable" style="width: 100%" border :span-method="combineCell" :cell-class-name="hasCourse">
-          <el-table-column prop="time" label="时间"/>
-          <el-table-column prop="mon" label="星期一"/>
-          <el-table-column prop="tue" label="星期二"/>
-          <el-table-column prop="wed" label="星期三"/>
-          <el-table-column prop="thu" label="星期四"/>
-          <el-table-column prop="fri" label="星期五"/>
-          <el-table-column prop="sat" label="星期六"/>
-          <el-table-column prop="sun" label="星期日"/>
+        <el-table :data="courseTable" style="width: 100%" border
+                  :span-method="combineCell" :cell-class-name="hasCourse">
+          <el-table-column prop="time" label="时间" align="center"/>
+          <el-table-column prop="mon" label="星期一" align="center"/>
+          <el-table-column prop="tue" label="星期二" align="center"/>
+          <el-table-column prop="wed" label="星期三" align="center"/>
+          <el-table-column prop="thu" label="星期四" align="center"/>
+          <el-table-column prop="fri" label="星期五" align="center"/>
+          <el-table-column prop="sat" label="星期六" align="center"/>
+          <el-table-column prop="sun" label="星期日" align="center"/>
         </el-table>
         <el-table :data="myCourses" style="width: 100%" border>
-          <el-table-column prop="state" label="状态"/>
-          <el-table-column prop="id" label="课程号"/>
-          <el-table-column prop="teacher" label="教师"/>
-          <el-table-column prop="time" label="上课时间"/>
-          <el-table-column prop="place" label="上课地点"/>
-          <el-table-column prop="op" label="操作">
+          <el-table-column prop="filtering" label="状态" align="center">
+            <template scope="scope">
+              <span v-if="scope.row.filtering"
+                    style="color: red">筛选中</span>
+              <span v-else
+                    style="color: blue">已选上</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="id" label="课程号" align="center"/>
+          <el-table-column prop="teacher" label="教师" align="center"/>
+          <el-table-column prop="time" label="上课时间" align="center"/>
+          <el-table-column prop="place" label="上课地点" align="center"/>
+          <el-table-column prop="op" label="操作" align="center">
             <template slot-scope="scope">
               <el-button type="danger"
                 @click="dropCourse(scope.$index)">退选</el-button>
@@ -29,18 +37,18 @@
         </el-table>
       </el-popover>
 
-      <el-select v-model="searchTitle1" placeholder="请选择">
+      <el-select class="search-option" v-model="searchTitle1" placeholder="请选择">
         <el-option v-for="item in searchTitleOptions" :key="item"
                    :label="item" :value="item"></el-option>
       </el-select>
-      <el-input class="inline-input" v-model="searchInfo1"
+      <el-input class="search-input" v-model="searchInfo1"
                 prefix-icon="el-icon-search" clearable placeholder="请输入内容"/>
 
-      <el-select v-model="searchTitle2" placeholder="请选择">
+      <el-select class="search-option" v-model="searchTitle2" placeholder="请选择">
         <el-option v-for="item in searchTitleOptions" :key="item"
                    :label="item" :value="item"></el-option>
       </el-select>
-      <el-input class="inline-input" v-model="searchInfo2"
+      <el-input class="search-input" v-model="searchInfo2"
                 prefix-icon="el-icon-search" clearable placeholder="请输入内容"/>
 
       <el-button type="primary">查询</el-button>
@@ -48,19 +56,20 @@
     </el-row>
 
     <el-table :data="searchResults" style="width: 100%" :row-key="getRowKeys"
-              :expand-row-keys="expands" @expand-change="expandSelect">
+              :expand-row-keys="expands" @expand-change="expandSelect"
+              :row-class-name="courseSelected" @row-click="rowClick">
 
-      <el-table-column type="expand">
+      <el-table-column type="expand" align="center">
         <el-table :data="chosenCourseDetails" style="width: 100%"
                   :row-class-name="whichCourseSelected">
-          <el-table-column prop="teacher" sortable label="教师"/>
-          <el-table-column prop="courseTime" sortable label="上课时间"/>
-          <el-table-column prop="coursePlace" sortable label="上课地点"/>
-          <el-table-column prop="examTime" sortable label="考试时间"/>
-          <el-table-column prop="remainNum" sortable label="余量"/>
-          <el-table-column prop="totalNum" sortable label="容量"/>
-          <el-table-column prop="chosenNum" sortable label="待定人数"/>
-          <el-table-column prop="op" label="操作">
+          <el-table-column prop="teacher" sortable label="教师" align="center"/>
+          <el-table-column prop="courseTime" sortable label="上课时间" align="center"/>
+          <el-table-column prop="coursePlace" sortable label="上课地点" align="center"/>
+          <el-table-column prop="examTime" sortable label="考试时间" align="center"/>
+          <el-table-column prop="remainNum" sortable label="余量" align="center"/>
+          <el-table-column prop="totalNum" sortable label="容量" align="center"/>
+          <el-table-column prop="chosenNum" sortable label="待定人数" align="center"/>
+          <el-table-column prop="op" label="操作" align="center">
             <template slot-scope="scope">
               <el-button
                 :type="chosenCourseDetails[scope.$index].chosen ? 'danger' : 'primary'"
@@ -71,9 +80,14 @@
         </el-table>
       </el-table-column>
 
-      <el-table-column label="课程ID" prop="id"/>
-      <el-table-column label="课程名称" prop="name"/>
-      <el-table-column label="选课状态" prop="state"/>
+      <el-table-column label="课程ID" prop="id" align="center"/>
+      <el-table-column label="课程名称" prop="name" align="center"/>
+      <el-table-column label="选课状态" prop="chosen" align="center">
+        <template scope="scope">
+          <b v-if="scope.row.chosen">已选</b>
+          <span v-else>未选</span>
+        </template>
+      </el-table-column>
     </el-table>
   </div>
 </template>
@@ -95,19 +109,23 @@ export default {
       searchResults: [{
         id: '21120261',
         name: '软件工程',
-        state: '未选'
+        state: '未选',
+        chosen: false
       }, {
         id: '21120262',
         name: '软件工程',
-        state: '未选'
+        state: '未选',
+        chosen: true
       }, {
         id: '21120263',
         name: '软件工程',
-        state: '未选'
+        state: '未选',
+        chosen: false
       }, {
         id: '21120264',
         name: '软件工程',
-        state: '未选'
+        state: '未选',
+        chosen: false
       }],
       chosenCourseDetails: [{
         teacher: '刘玉生',
@@ -126,7 +144,7 @@ export default {
         remainNum: -1,
         totalNum: 79,
         chosenNum: 0,
-        chosen: false
+        chosen: true
       }, {
         teacher: '刘玉生',
         courseTime: '周一第1,2节',
@@ -267,13 +285,13 @@ export default {
         }
       ],
       myCourses: [{
-        state: '已选上',
+        filtering: false,
         id: '21120264',
         teacher: '刘玉生',
         time: '周一第1,2节',
         place: '玉泉曹光彪二期-104(多)'
       }, {
-        state: '筛选中',
+        filtering: true,
         id: '21120264',
         teacher: '刘玉生',
         time: '周一第1,2节',
@@ -284,6 +302,13 @@ export default {
   methods: {
     getRowKeys (row) {
       return row.id
+    },
+    courseSelected ({rowIndex}) {
+      if (this.searchResults[rowIndex].chosen) {
+        return 'chosen-row'
+      } else {
+        return ''
+      }
     },
     whichCourseSelected ({rowIndex}) {
       if (this.chosenCourseDetails[rowIndex].chosen) {
@@ -302,6 +327,13 @@ export default {
     expandSelect (row, expandedRows) {
       this.expands = []
       if (expandedRows.length > 0 && row) {
+        this.expands.push(row.id)
+      }
+    },
+    rowClick (row, event, column) {
+      let collapse = this.expands.indexOf(row.id) >= 0
+      this.expands = []
+      if (!collapse) {
         this.expands.push(row.id)
       }
     },
@@ -368,5 +400,15 @@ export default {
   width: 1300px;
   height: 500px;
   overflow: auto;
+}
+.func-row {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.search-option {
+  width: 150px;
+}
+.search-input {
+  width: 450px;
 }
 </style>
