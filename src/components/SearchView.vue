@@ -4,7 +4,7 @@
       <el-button v-popover:tablepop type="primary" round>显示课表</el-button>
 
       <el-popover ref="tablepop" placement="bottom-start" trigger="click">
-        <el-table :data="courseTable" style="width: 100%" border>
+        <el-table :data="courseTable" style="width: 100%" border :span-method="combineCell">
           <el-table-column prop="time" label="时间"/>
           <el-table-column prop="mon" label="星期一"/>
           <el-table-column prop="tue" label="星期二"/>
@@ -147,7 +147,124 @@ export default {
         chosen: false
       }],
       courseTable: [
-        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
+        {
+          time: '1',
+          mon: '',
+          tue: '',
+          wed: '',
+          thu: '',
+          fri: '',
+          sat: '',
+          sun: ''
+        }, {
+          time: '2',
+          mon: '',
+          tue: '',
+          wed: '',
+          thu: '',
+          fri: '',
+          sat: '',
+          sun: ''
+        }, {
+          time: '3',
+          mon: '',
+          tue: '',
+          wed: '',
+          thu: '',
+          fri: '',
+          sat: '',
+          sun: ''
+        }, {
+          time: '4',
+          mon: '',
+          tue: '',
+          wed: '',
+          thu: '',
+          fri: '',
+          sat: '',
+          sun: ''
+        }, {
+          time: '5',
+          mon: '',
+          tue: '',
+          wed: '',
+          thu: '',
+          fri: '',
+          sat: '',
+          sun: ''
+        }, {
+          time: '6',
+          mon: '',
+          tue: '',
+          wed: '',
+          thu: '',
+          fri: '',
+          sat: '',
+          sun: ''
+        }, {
+          time: '7',
+          mon: '',
+          tue: '',
+          wed: '',
+          thu: '',
+          fri: '',
+          sat: '',
+          sun: ''
+        }, {
+          time: '8',
+          mon: '',
+          tue: '',
+          wed: '',
+          thu: '',
+          fri: '',
+          sat: '',
+          sun: ''
+        }, {
+          time: '9',
+          mon: '',
+          tue: '',
+          wed: '',
+          thu: '',
+          fri: '',
+          sat: '',
+          sun: ''
+        }, {
+          time: '10',
+          mon: '',
+          tue: '',
+          wed: '',
+          thu: '',
+          fri: '',
+          sat: '',
+          sun: ''
+        }, {
+          time: '11',
+          mon: '软件工程',
+          tue: '',
+          wed: '',
+          thu: '',
+          fri: '',
+          sat: '',
+          sun: ''
+        }, {
+          time: '12',
+          mon: '软件工程',
+          tue: '',
+          wed: '',
+          thu: '',
+          fri: '',
+          sat: '',
+          sun: ''
+        }, {
+          time: '13',
+          mon: '软件工程',
+          tue: '',
+          wed: '',
+          thu: '',
+          fri: '',
+          sat: '',
+          sun: ''
+        }
       ],
       myCourses: [{
         state: '已选上',
@@ -186,6 +303,23 @@ export default {
     },
     dropCourse (index) {
 
+    },
+    combineCell ({row, column, rowIndex, columnIndex}) {
+      if (rowIndex > 0 && row[column.property] === this.courseTable[rowIndex - 1][column.property]) {
+        return {
+          rowspan: 0,
+          colspan: 0
+        }
+      } else {
+        let rows = 1
+        for (let i = rowIndex; i < this.courseTable[i + 1][column.property];) {
+          rows = rows + 1
+        }
+        return {
+          rowspan: rows,
+          colspan: 1
+        }
+      }
     }
   }
 }
