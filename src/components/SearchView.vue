@@ -17,7 +17,7 @@
         </el-table>
         <el-table :data="myCourses" style="width: 100%" border>
           <el-table-column prop="filtering" label="状态" align="center">
-            <template scope="scope">
+            <template slot-scope="scope">
               <span v-if="scope.row.filtering"
                     style="color: red">筛选中</span>
               <span v-else
@@ -83,7 +83,7 @@
       <el-table-column label="课程ID" prop="id" align="center"/>
       <el-table-column label="课程名称" prop="name" align="center"/>
       <el-table-column label="选课状态" prop="chosen" align="center">
-        <template scope="scope">
+        <template slot-scope="scope">
           <b v-if="scope.row.chosen">已选</b>
           <span v-else>未选</span>
         </template>
