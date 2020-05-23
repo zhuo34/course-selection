@@ -1,11 +1,13 @@
 <template>
-  <div>
+  <div v-loading="searchLoading || myCourseLoading">
     <el-row type="flex" justify="space-around" class="func-row">
-      <el-button v-if="showCourseTable" v-popover:tablepop type="primary" round>显示课表</el-button>
+      <el-button v-if="showCourseTable" v-popover:tablepop
+                 type="primary" round>显示课表</el-button>
 
       <el-popover ref="tablepop" placement="bottom-start" trigger="click">
         <el-table :data="courseTable" style="width: 100%" border
-                  :span-method="combineCell" :cell-class-name="hasCourse">
+                  :span-method="combineCell" :cell-class-name="hasCourse"
+                  row-class-name="course-table-row">
           <el-table-column prop="time" label="时间" align="center"/>
           <el-table-column prop="mon" label="星期一" align="center"/>
           <el-table-column prop="tue" label="星期二" align="center"/>
@@ -51,7 +53,7 @@
       <el-input class="search-input" v-model="searchInfo2"
                 prefix-icon="el-icon-search" clearable placeholder="请输入内容"/>
 
-      <el-button type="primary">查询</el-button>
+      <el-button type="primary" @click="accessSearchResults">查询</el-button>
 
     </el-row>
 
@@ -61,7 +63,7 @@
 
       <el-table-column type="expand" align="center">
         <el-table :data="chosenCourseDetails" style="width: 100%"
-                  :row-class-name="whichCourseSelected">
+                  :row-class-name="whichCourseSelected" v-loading="detailLoading">
           <el-table-column prop="teacher" sortable label="教师" align="center"/>
           <el-table-column prop="courseTime" sortable label="上课时间" align="center"/>
           <el-table-column prop="coursePlace" sortable label="上课地点" align="center"/>
@@ -82,6 +84,7 @@
 
       <el-table-column label="课程ID" prop="id" align="center"/>
       <el-table-column label="课程名称" prop="name" align="center"/>
+      <el-table-column label="学分" prop="credit" align="center"/>
       <el-table-column label="选课状态" prop="chosen" align="center">
         <template slot-scope="scope">
           <b v-if="scope.row.chosen">已选</b>
@@ -102,6 +105,9 @@ export default {
   name: 'SearchView',
   data () {
     return {
+      searchLoading: false,
+      detailLoading: false,
+      myCourseLoading: false,
       searchTitleOptions: [
         '课程名称', '课程代码', '教师姓名', '课程类别',
         '上课时间', '上课地点', '学期'
@@ -111,197 +117,10 @@ export default {
       searchInfo1: '',
       searchInfo2: '',
       expands: [],
-      searchResults: [{
-        id: '21120261',
-        name: '软件工程',
-        state: '未选',
-        chosen: false
-      }, {
-        id: '21120262',
-        name: '软件工程',
-        state: '未选',
-        chosen: true
-      }, {
-        id: '21120263',
-        name: '软件工程',
-        state: '未选',
-        chosen: false
-      }, {
-        id: '21120264',
-        name: '软件工程',
-        state: '未选',
-        chosen: false
-      }],
-      chosenCourseDetails: [{
-        teacher: '刘玉生',
-        courseTime: '周一第1,2节',
-        coursePlace: '玉泉曹光彪二期-104(多)',
-        examTime: '2020年6月30日(14:00-16:00)',
-        remainNum: -1,
-        totalNum: 79,
-        chosenNum: 0,
-        chosen: false
-      }, {
-        teacher: '刘玉生',
-        courseTime: '周一第1,2节',
-        coursePlace: '玉泉曹光彪二期-104(多)',
-        examTime: '2020年6月30日(14:00-16:00)',
-        remainNum: -1,
-        totalNum: 79,
-        chosenNum: 0,
-        chosen: true
-      }, {
-        teacher: '刘玉生',
-        courseTime: '周一第1,2节',
-        coursePlace: '玉泉曹光彪二期-104(多)',
-        examTime: '2020年6月30日(14:00-16:00)',
-        remainNum: -1,
-        totalNum: 79,
-        chosenNum: 0,
-        chosen: false
-      }, {
-        teacher: '刘玉生',
-        courseTime: '周一第1,2节',
-        coursePlace: '玉泉曹光彪二期-104(多)',
-        examTime: '2020年6月30日(14:00-16:00)',
-        remainNum: -1,
-        totalNum: 79,
-        chosenNum: 0,
-        chosen: false
-      }],
-      courseTable: [
-        {
-          time: '1',
-          mon: '',
-          tue: '',
-          wed: '',
-          thu: '',
-          fri: '',
-          sat: '',
-          sun: ''
-        }, {
-          time: '2',
-          mon: '',
-          tue: '',
-          wed: '',
-          thu: '',
-          fri: '',
-          sat: '',
-          sun: ''
-        }, {
-          time: '3',
-          mon: '',
-          tue: '',
-          wed: '',
-          thu: '',
-          fri: '',
-          sat: '',
-          sun: ''
-        }, {
-          time: '4',
-          mon: '',
-          tue: '',
-          wed: '',
-          thu: '',
-          fri: '',
-          sat: '',
-          sun: ''
-        }, {
-          time: '5',
-          mon: '',
-          tue: '',
-          wed: '',
-          thu: '',
-          fri: '',
-          sat: '',
-          sun: ''
-        }, {
-          time: '6',
-          mon: '',
-          tue: '',
-          wed: '',
-          thu: '',
-          fri: '',
-          sat: '',
-          sun: ''
-        }, {
-          time: '7',
-          mon: '',
-          tue: '',
-          wed: '',
-          thu: '',
-          fri: '',
-          sat: '',
-          sun: ''
-        }, {
-          time: '8',
-          mon: '',
-          tue: '',
-          wed: '',
-          thu: '',
-          fri: '',
-          sat: '',
-          sun: ''
-        }, {
-          time: '9',
-          mon: '',
-          tue: '',
-          wed: '',
-          thu: '',
-          fri: '',
-          sat: '',
-          sun: ''
-        }, {
-          time: '10',
-          mon: '',
-          tue: '',
-          wed: '',
-          thu: '',
-          fri: '',
-          sat: '',
-          sun: ''
-        }, {
-          time: '11',
-          mon: '软件工程',
-          tue: '',
-          wed: '',
-          thu: '',
-          fri: '',
-          sat: '',
-          sun: ''
-        }, {
-          time: '12',
-          mon: '软件工程',
-          tue: '',
-          wed: '',
-          thu: '',
-          fri: '',
-          sat: '',
-          sun: ''
-        }, {
-          time: '13',
-          mon: '软件工程',
-          tue: '',
-          wed: '',
-          thu: '',
-          fri: '',
-          sat: '',
-          sun: ''
-        }
-      ],
-      myCourses: [{
-        filtering: false,
-        id: '21120264',
-        teacher: '刘玉生',
-        time: '周一第1,2节',
-        place: '玉泉曹光彪二期-104(多)'
-      }, {
-        filtering: true,
-        id: '21120264',
-        teacher: '刘玉生',
-        time: '周一第1,2节',
-        place: '玉泉曹光彪二期-104(多)'
-      }]
+      searchResults: [],
+      chosenCourseDetails: [],
+      courseTable: [],
+      myCourses: []
     }
   },
   methods: {
@@ -323,7 +142,7 @@ export default {
       }
     },
     hasCourse ({row, column, rowIndex, columnIndex}) {
-      if (row[column.property] === '' || columnIndex === 0) {
+      if (columnIndex === 0 || row[column.property] === '') {
         return ''
       } else {
         return 'cell-blue'
@@ -333,6 +152,7 @@ export default {
       this.expands = []
       if (expandedRows.length > 0 && row) {
         this.expands.push(row.id)
+        this.accessCourseDetail(row)
       }
     },
     rowClick (row, event, column) {
@@ -340,6 +160,7 @@ export default {
       this.expands = []
       if (!collapse) {
         this.expands.push(row.id)
+        this.accessCourseDetail(row)
       }
     },
     modifyChosen (index) {
@@ -372,7 +193,122 @@ export default {
           colspan: 1
         }
       }
+    },
+
+    // Data access methods
+    // 注意：之后要换成异步操作
+    accessSearchResults () {
+      this.searchLoading = true
+
+      let ret = [{
+        id: '21120261',
+        name: '软件工程',
+        state: '未选',
+        chosen: false,
+        credit: 1.0.toFixed(1)
+      }, {
+        id: '21120262',
+        name: '软件工程',
+        state: '未选',
+        chosen: true,
+        credit: 1.5.toFixed(1)
+      }, {
+        id: '21120263',
+        name: '软件工程',
+        state: '未选',
+        chosen: false,
+        credit: 2.0.toFixed(1)
+      }, {
+        id: '21120264',
+        name: '软件工程',
+        state: '未选',
+        chosen: false,
+        credit: 2.5.toFixed(1)
+      }]
+      this.searchResults = ret
+
+      this.searchLoading = false
+    },
+    accessMyCourses () {
+      this.myCourseLoading = true
+
+      let ret = [{
+        filtering: false,
+        id: '21120264',
+        teacher: '刘玉生',
+        time: '周一第1,2节',
+        place: '玉泉曹光彪二期-104(多)'
+      }, {
+        filtering: true,
+        id: '21120264',
+        teacher: '刘玉生',
+        time: '周一第1,2节',
+        place: '玉泉曹光彪二期-104(多)'
+      }]
+      this.updateCourseTable()
+      this.myCourses = ret
+
+      this.myCourseLoading = false
+    },
+    updateCourseTable () {
+      // let myCourses = this.myCourses
+      let ret = []
+      for (let i = 0; i < 13; i++) {
+        ret.push({time: i + 1, mon: '', tue: '', wed: '', thu: '', fri: '', sat: '', sun: ''})
+      }
+      ret[10].mon = '软件工程'
+      ret[11].mon = '软件工程'
+      ret[12].mon = '软件工程'
+      this.courseTable = ret
+    },
+    accessCourseDetail (row) {
+      this.detailLoading = true
+
+      let ret = [{
+        teacher: '刘玉生',
+        courseTime: '周一第1,2节',
+        coursePlace: '玉泉曹光彪二期-104(多)',
+        examTime: '2020年6月30日(14:00-16:00)',
+        remainNum: -1,
+        totalNum: 79,
+        chosenNum: 0,
+        chosen: false
+      }, {
+        teacher: '刘玉生',
+        courseTime: '周一第1,2节',
+        coursePlace: '玉泉曹光彪二期-104(多)',
+        examTime: '2020年6月30日(14:00-16:00)',
+        remainNum: -1,
+        totalNum: 79,
+        chosenNum: 0,
+        chosen: true
+      }, {
+        teacher: '刘玉生',
+        courseTime: '周一第1,2节',
+        coursePlace: '玉泉曹光彪二期-104(多)',
+        examTime: '2020年6月30日(14:00-16:00)',
+        remainNum: -1,
+        totalNum: 79,
+        chosenNum: 0,
+        chosen: false
+      }, {
+        teacher: '刘玉生',
+        courseTime: '周一第1,2节',
+        coursePlace: '玉泉曹光彪二期-104(多)',
+        examTime: '2020年6月30日(14:00-16:00)',
+        remainNum: -1,
+        totalNum: 79,
+        chosenNum: 0,
+        chosen: false
+      }]
+      this.chosenCourseDetails = ret
+
+      this.detailLoading = false
     }
+  },
+  mounted () {
+    this.accessSearchResults()
+    this.accessMyCourses()
   }
 }
 </script>
@@ -415,5 +351,14 @@ export default {
 }
 .search-input {
   width: 450px;
+}
+.el-table__body tr:hover > td {
+  background: initial !important;
+}
+.el-table__body tr:current-row > td {
+  background: initial !important;
+}
+.course-table-row {
+  pointer-events: none;
 }
 </style>
