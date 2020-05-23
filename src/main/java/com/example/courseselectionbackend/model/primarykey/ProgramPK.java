@@ -7,17 +7,16 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import java.io.Serializable;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
-public class CourseSelectionPK implements PrimaryKey {
+public class ProgramPK implements PrimaryKey {
 	@Column(name = "sid", length = 10)
 	private String stuId;
 
-	@Column(name = "ccno")
-	private Integer classId;
+	@Column(name = "cid", length = 10)
+	private String courseId;
 }

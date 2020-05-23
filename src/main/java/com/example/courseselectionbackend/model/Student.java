@@ -34,6 +34,12 @@ public class Student {
 	@Column(name = "scollege", length = 40)
 	private String stuCollege;
 
+	@Column(name = "semail", length = 40)
+	private String stuEmail;
+
+	@Column(name = "sprogram")
+	private boolean stuProgramConfirmed;
+
 	@Lob
 	@Basic(fetch = FetchType.LAZY)
 	@Column(name = "sphoto", columnDefinition="blob")
@@ -41,4 +47,7 @@ public class Student {
 
 	@OneToMany(mappedBy = "student")
 	private Set<CourseSelection> selectedCourses;
+
+	@OneToMany(mappedBy = "student")
+	private Set<Program> programs;
 }

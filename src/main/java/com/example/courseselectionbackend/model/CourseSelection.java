@@ -21,15 +21,15 @@ public class CourseSelection {
 	private CourseSelectionPK id;
 
 	@ManyToOne
-	@MapsId("stu_id")
-	@JoinColumn(name = "stu_id")
+	@MapsId("sid")
+	@JoinColumn(name = "sid", foreignKey = @ForeignKey(name = "fk7"), nullable = false)
 	private Student student;
 
 	@ManyToOne
-	@MapsId("class_id")
-	@JoinColumn(name = "class_id")
+	@MapsId("ccno")
+	@JoinColumn(name = "ccno", foreignKey = @ForeignKey(name = "fk8"), nullable = false)
 	private CourseClass courseClass;
 
-	@Column(name = "is_on")
+	@Column(name = "ison", nullable = false)
 	private boolean isOn;
 }

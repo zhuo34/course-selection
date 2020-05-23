@@ -18,12 +18,24 @@ import java.util.Set;
 public class CourseInfo {
 
 	@Id
-	@Column(name = "course_id")
+	@Column(name = "cid", length = 10)
 	private String courseId;
 
-	@Column(name = "course_name")
+	@Column(name = "cname", length = 40, nullable = false)
 	private String courseName;
+
+	@Column(name = "ccredits", nullable = false)
+	private double courseCredits;
+
+	@Column(name = "cexammode", length = 40, nullable = false)
+	private String courseExamMode;
+
+	@Column(name = "ctype", nullable = false)
+	private boolean ctype;
 
 	@OneToMany(mappedBy = "courseInfo")
 	private Set<CourseClass> courseClasses;
+
+	@OneToMany(mappedBy = "course")
+	private Set<Program> programs;
 }

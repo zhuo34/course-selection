@@ -18,12 +18,26 @@ import java.util.Set;
 public class CourseClass {
 
 	@Id
-	@Column(name = "class_id")
-	private Long classId;
+	@Column(name = "ccno", precision = 11)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer classId;
 
 	@ManyToOne
-	@JoinColumn(name = "course_id")
+	@JoinColumn(name = "cid", foreignKey = @ForeignKey(name = "fk5"), nullable = false)
 	private CourseInfo courseInfo;
+
+	@ManyToOne
+	@JoinColumn(name = "tid", foreignKey = @ForeignKey(name = "fk6"), nullable = false)
+	private Teacher teacher;
+
+	@Column(name = "ctime", nullable = false)
+	private String time;
+
+	@Column(name = "cplace", nullable = false)
+	private String place;
+
+	@Column(name = "capacity", nullable = false)
+	private int capacity;
 
 	@OneToMany(mappedBy = "courseClass")
 	private Set<CourseSelection> selectedStudents;
