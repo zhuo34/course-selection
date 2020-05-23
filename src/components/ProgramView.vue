@@ -21,26 +21,7 @@
         <p>{{selectiveCredit}}</p>
         <el-button v-popover:tablepop type="primary" round>添加课程</el-button>
         <el-popover ref="tablepop" placement="bottom-start" trigger="click">
-
-          <el-select v-model="searchTitle1" placeholder="请选择">
-            <el-option v-for="item in searchTitleOptions" :key="item"
-                    :label="item" :value="item"></el-option>
-          </el-select>
-
-          <el-input class="inline-input" v-model="searchInfo1"
-                  prefix-icon="el-icon-search" clearable placeholder="请输入内容"/>
-
-          <el-table :data="courseList" style="width: 100%" border>
-            <el-table-column prop="id" label="课程号"/>
-            <el-table-column prop="name" label="课程名称"/>
-            <el-table-column prop="credit" label="学分"/>
-            <el-table-column prop="op" label="操作">
-              <template slot-scope="scope">
-                <el-button type="danger"
-                  @click="addCourse(scope.$index, 'selectiveCourse')">添加</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+          <search-view></search-view>
         </el-popover>
       </el-row>
 
@@ -74,8 +55,10 @@
 </template>
 
 <script>
+import SearchView from "./SearchView";
 export default {
   name: 'ProgramView',
+  components: {SearchView},
   data () {
     return {
       requiredCourse: [{
