@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-row type="flex" justify="space-around" class="func-row">
-      <el-button v-popover:tablepop type="primary" round>显示课表</el-button>
+      <el-button v-if="showCourseTable" v-popover:tablepop type="primary" round>显示课表</el-button>
 
       <el-popover ref="tablepop" placement="bottom-start" trigger="click">
         <el-table :data="courseTable" style="width: 100%" border
@@ -94,6 +94,11 @@
 
 <script>
 export default {
+  props: {
+    showCourseTable: {
+      default: true
+    }
+  },
   name: 'SearchView',
   data () {
     return {

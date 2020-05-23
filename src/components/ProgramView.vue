@@ -21,7 +21,7 @@
         <p>{{selectiveCredit}}</p>
         <el-button v-popover:tablepop type="primary" round>添加课程</el-button>
         <el-popover ref="tablepop" placement="bottom-start" trigger="click">
-          <search-view></search-view>
+          <search-view :showCourseTable="false"></search-view>
         </el-popover>
       </el-row>
 
@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import SearchView from "./SearchView";
+import SearchView from './SearchView'
 export default {
   name: 'ProgramView',
   components: {SearchView},
