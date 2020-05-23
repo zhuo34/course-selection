@@ -4,7 +4,7 @@
       <el-button v-popover:tablepop type="primary" round>显示课表</el-button>
 
       <el-popover ref="tablepop" placement="bottom-start" trigger="click">
-        <el-table :data="courseTable" style="width: 100%" border :span-method="combineCell">
+        <el-table :data="courseTable" style="width: 100%" border :span-method="combineCell" :cell-class-name="hasCourse">
           <el-table-column prop="time" label="时间"/>
           <el-table-column prop="mon" label="星期一"/>
           <el-table-column prop="tue" label="星期二"/>
@@ -292,6 +292,13 @@ export default {
         return ''
       }
     },
+    hasCourse ({row, column, rowIndex, columnIndex}) {
+      if (row[column.property] === '' || columnIndex === 0) {
+        return ''
+      } else {
+        return 'cell-blue'
+      }
+    },
     expandSelect (row, expandedRows) {
       this.expands = []
       if (expandedRows.length > 0 && row) {
@@ -305,6 +312,12 @@ export default {
 
     },
     combineCell ({row, column, rowIndex, columnIndex}) {
+      if (row[column.property] === '') {
+        return {
+          rowspan: 1,
+          colspan: 1
+        }
+      }
       if (rowIndex > 0 && row[column.property] === this.courseTable[rowIndex - 1][column.property]) {
         return {
           rowspan: 0,
@@ -312,8 +325,10 @@ export default {
         }
       } else {
         let rows = 1
-        for (let i = rowIndex; i < this.courseTable[i + 1][column.property];) {
-          rows = rows + 1
+        for (let i = rowIndex; i < this.courseTable.length - 1; i++) {
+          if (row[column.property] === this.courseTable[i + 1][column.property]) {
+            rows = rows + 1
+          }
         }
         return {
           rowspan: rows,
@@ -345,6 +360,9 @@ export default {
 }
 .el-table .chosen-row {
   background:oldlace;
+}
+.cell-blue {
+  background: powderblue;
 }
 .el-popover{
   width: 1300px;
