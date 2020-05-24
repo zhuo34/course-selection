@@ -17,11 +17,15 @@ import java.util.List;
 public class CourseSelectionService {
 
 	@Autowired
+	private JPAQueryFactory queryFactory;
+
+	@Autowired
 	private CourseSelectionRepository courseSelectionRepository;
 
 	@Transactional
 	public List<CourseSelection> getAll() {
-		return courseSelectionRepository.findAll();
+		QCourseSelection courseSelection = QCourseSelection.courseSelection;
+		return queryFactory.selectFrom(courseSelection).fetch();
 	}
 
 	@Transactional
