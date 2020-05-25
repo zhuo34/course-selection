@@ -34,6 +34,6 @@ public class Teacher {
 	@Column(name = "tphoto", columnDefinition="blob")
 	private byte[] teaPhoto;
 
-	@OneToMany(mappedBy = "teacher")
-	private Set<CourseClass> teaClasses;
+//	@OneToMany(mappedBy = "teacher")
+//	private Set<CourseClass> teaClasses;
 }

@@ -24,7 +24,7 @@ public class CourseInfo {
 	@Column(name = "cname", length = 40, nullable = false)
 	private String courseName;
 
-	@Column(name = "ccredits", nullable = false)
+	@Column(name = "credits", nullable = false)
 	private double courseCredits;
 
 	@Column(name = "cexammode", length = 40, nullable = false)
@@ -33,9 +33,9 @@ public class CourseInfo {
 	@Column(name = "ctype", nullable = false)
 	private boolean ctype;
 
-	@OneToMany(mappedBy = "courseInfo")
-	private Set<CourseClass> courseClasses;
-
-	@OneToMany(mappedBy = "course")
-	private Set<Program> programs;
+//	@OneToMany(mappedBy = "courseInfo")
+//	private Set<CourseClass> courseClasses;
+//
+//	@OneToMany(mappedBy = "course")
+//	private Set<Program> programs;
 }

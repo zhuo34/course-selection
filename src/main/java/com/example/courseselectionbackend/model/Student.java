@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -38,16 +40,18 @@ public class Student {
 	private String stuEmail;
 
 	@Column(name = "sprogram")
-	private boolean stuProgramConfirmed;
+	private Boolean stuProgramConfirmed;
 
 	@Lob
 	@Basic(fetch = FetchType.LAZY)
 	@Column(name = "sphoto", columnDefinition="blob")
-	private byte[] stuPhoto;
+	private Byte[] stuPhoto;
 
-	@OneToMany(mappedBy = "student")
-	private Set<CourseSelection> selectedCourses;
-
-	@OneToMany(mappedBy = "student")
-	private Set<Program> programs;
+//	@Fetch(FetchMode.JOIN)
+//	@OneToMany(mappedBy = "student")
+//	private Set<CourseSelection> selectedCourses;
+//
+//	@Fetch(FetchMode.JOIN)
+//	@OneToMany(mappedBy = "student")
+//	private Set<Program> programs;
 }

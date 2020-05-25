@@ -22,13 +22,19 @@ public class CourseClass {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer classId;
 
-	@ManyToOne
-	@JoinColumn(name = "cid", foreignKey = @ForeignKey(name = "fk5"), nullable = false)
-	private CourseInfo courseInfo;
+	@Column(name = "cid", length = 10)
+	private String courseId;
 
-	@ManyToOne
-	@JoinColumn(name = "tid", foreignKey = @ForeignKey(name = "fk6"), nullable = false)
-	private Teacher teacher;
+	@Column(name = "ctid", length = 10)
+	private String teaId;
+
+//	@ManyToOne
+//	@JoinColumn(name = "cid", foreignKey = @ForeignKey(name = "fk5"), nullable = false)
+//	private CourseInfo courseInfo;
+//
+//	@ManyToOne
+//	@JoinColumn(name = "ctid", foreignKey = @ForeignKey(name = "fk6"), nullable = false)
+//	private Teacher teacher;
 
 	@Column(name = "ctime", nullable = false)
 	private String time;
@@ -39,6 +45,6 @@ public class CourseClass {
 	@Column(name = "capacity", nullable = false)
 	private int capacity;
 
-	@OneToMany(mappedBy = "courseClass")
-	private Set<CourseSelection> selectedStudents;
+//	@OneToMany(mappedBy = "courseClass")
+//	private Set<CourseSelection> selectedStudents;
 }

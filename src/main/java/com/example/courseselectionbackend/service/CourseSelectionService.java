@@ -1,35 +1,28 @@
 package com.example.courseselectionbackend.service;
 
-import com.example.courseselectionbackend.model.CourseSelection;
-import com.example.courseselectionbackend.model.QCourseSelection;
-import com.example.courseselectionbackend.repository.CourseSelectionRepository;
-import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.example.courseselectionbackend.model.QStudent;
+import com.example.courseselectionbackend.model.Student;
+import com.example.courseselectionbackend.querydsl.QueryDslManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CourseSelectionService {
 
 	@Autowired
-	private JPAQueryFactory queryFactory;
-
-	@Autowired
-	private CourseSelectionRepository courseSelectionRepository;
+	private QueryDslManager queryManager;
 
 	@Transactional
-	public List<CourseSelection> getAll() {
-		QCourseSelection courseSelection = QCourseSelection.courseSelection;
-		return queryFactory.selectFrom(courseSelection).fetch();
+	public List<Student> getAll() {
+		return queryManager.qf().selectFrom(QStudent.student).fetch();
 	}
 
 	@Transactional
-	public void add(CourseSelection a) {
-		courseSelectionRepository.save(a);
+	public List<Map<String, Object>> get() {
+		return queryManager.findSelectedCourseInfoByStuId("3170756898");
 	}
 }

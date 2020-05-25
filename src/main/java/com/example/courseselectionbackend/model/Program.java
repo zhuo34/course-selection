@@ -19,13 +19,13 @@ public class Program {
 	@EmbeddedId
 	private ProgramPK id;
 
-	@ManyToOne
-	@MapsId("sid")
-	@JoinColumn(name = "sid", foreignKey = @ForeignKey(name = "fk10"), nullable = false)
-	private Student student;
+//	@ManyToOne
+//	@MapsId("sid")
+//	@JoinColumn(name = "sid", foreignKey = @ForeignKey(name = "fk10"), nullable = false)
+//	private Student student;
 
-	@ManyToOne
-	@MapsId("cid")
-	@JoinColumn(name = "cid", foreignKey = @ForeignKey(name = "fk11"), nullable = false)
-	private CourseInfo course;
+//	@ManyToOne
+//	@MapsId("cid")
+//	@JoinColumn(name = "cid", foreignKey = @ForeignKey(name = "fk11"), nullable = false)
+//	private CourseInfo course;
 }
