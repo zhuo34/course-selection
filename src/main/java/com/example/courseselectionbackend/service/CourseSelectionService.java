@@ -23,6 +23,6 @@ public class CourseSelectionService {
 
 	@Transactional
 	public List<Map<String, Object>> get() {
-		return queryManager.findSelectedCourseInfoByStuId("3170756898");
+		return queryManager.findAllCourseClassInfoByCourseId("C123");
 	}
 }
