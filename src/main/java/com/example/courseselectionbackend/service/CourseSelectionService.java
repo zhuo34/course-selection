@@ -17,12 +17,7 @@ public class CourseSelectionService {
 	private QueryDslManager queryManager;
 
 	@Transactional
-	public List<Student> getAll() {
-		return queryManager.qf().selectFrom(QStudent.student).fetch();
-	}
-
-	@Transactional
-	public List<Map<String, Object>> get() {
-		return queryManager.findAllCourseClassInfoByCourseId("C123");
+	public List<Map<String, Object>> getClasses(String courseId, String stuId) {
+		return queryManager.findAllCourseClassInfoByCourseId(courseId, stuId);
 	}
 }

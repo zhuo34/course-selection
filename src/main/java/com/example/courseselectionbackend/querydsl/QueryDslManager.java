@@ -78,34 +78,42 @@ public class QueryDslManager {
 		return NamedTuple.toMapList(tuples, names);
 	}
 
-	public List<Map<String, Object>> findAllCourseClassInfoByCourseId(String courseId) {
+	public List<Map<String, Object>> findAllCourseClassInfoByCourseId(String courseId, String stuId) {
 		List<String> names = new ArrayList<String>(){{
-			add("classid"); add("teacher"); add("time"); add("place"); add("capacity");
+			add("classid"); add("teacher"); add("courseTime"); add("coursePlace"); add("totalNum"); add("examTime");
 		}};
 
 		List<Tuple> tuples = qf().select(courseClass.classId, teacher.teaName,
-				courseClass.time, courseClass.place, courseClass.capacity)
+				courseClass.time, courseClass.place, courseClass.capacity, courseClass.examTime)
 				.from(courseClass, courseInfo, teacher)
 				.where(courseInfo.courseId.eq(courseId), courseClass.courseId.eq(courseId),
 						courseClass.teaId.eq(teacher.teaId))
 				.fetch();
-
+		System.out.println(tuples.size());
 		return NamedTuple.toMapList(tuples, names, nt -> {
 			int classId = (Integer)(nt.getObj("classid"));
 			long allSelectNum = qf().select().from(courseClass, courseSelection)
 					.where(courseClass.classId.eq(classId), courseSelection.id.classId.eq(classId))
 					.fetchCount();
-			int rest = (int)(nt.getObj("capacity"));
-			int waiting = 0;
+			long haveSelectedNum = 0;
+			int capacity = (int)(nt.getObj("totalNum"));
 			if (allSelectNum > 0) {
-				long haveSelectedNum = qf().select().from(courseClass, courseSelection)
+				haveSelectedNum = qf().select().from(courseClass, courseSelection)
 						.where(courseClass.classId.eq(classId),
 								courseSelection.id.classId.eq(classId), courseSelection.isOn.eq(true))
 						.fetchCount();
-				rest -= haveSelectedNum;
 			}
-			nt.add("rest", rest);
-			nt.add("waiting", waiting);
+			long haveSelected = qf().select().from(courseClass)
+					.join(courseSelection)
+					.on(courseSelection.id.stuId.eq(stuId))
+					.fetchCount();
+			nt.add("remainNum", capacity - haveSelectedNum);
+			nt.add("chosenNum", allSelectNum - haveSelectedNum);
+			nt.add("chosen", haveSelected != 0);
+			nt.remove("classid");
 		});
 	}
+
+//	public List<Map<String, Object>> findAllProgram
+
 }

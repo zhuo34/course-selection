@@ -4,7 +4,7 @@ This is the backend of our course selection subsystem, supported by Spring Boot,
 
 ## 向前端提供的服务
 
-*[ ] searchResult
+* [ ] searchResult
 	+ 参数：以下参数列表中的两个 + （string 学生专业）
 		+ string：课程名称
 		+ string：课程代码（id）
@@ -18,7 +18,7 @@ This is the backend of our course selection subsystem, supported by Spring Boot,
 		+ string：课程名称
 		+ int：课程学分
 		+ bool：该学生是否已选课
-*[x] myCourse
+* [x] myCourse
 	+ 参数：int 学生id
 	+ 返回值：已选课程信息
 		+ bool：已选上or筛选中
@@ -27,7 +27,7 @@ This is the backend of our course selection subsystem, supported by Spring Boot,
 		+ int：上课时间起始
 		+ int：上课时间结束
 		+ string：上课地点
-*[x] courseDetails
+* [x] courseDetails
 	+ 参数：int 课程代码（id）
 	+ 返回值：
 		+ string：教师姓名
@@ -37,7 +37,7 @@ This is the backend of our course selection subsystem, supported by Spring Boot,
 		+ int：余量
 		+ int：容量
 		+ int：待定人数
-*[ ] program_myCourse
+* [ ] program_myCourse
 	+ 参数：int 学生id
 	+ 返回值：
 		+ int 课程代码
