@@ -105,6 +105,7 @@ export default {
   name: 'SearchView',
   data () {
     return {
+      stuId: '3170756898',
       searchLoading: false,
       detailLoading: false,
       myCourseLoading: false,
@@ -201,7 +202,7 @@ export default {
       this.searchLoading = true
 
       let ret = [{
-        id: '21120261',
+        id: 'C123',
         name: '软件工程',
         state: '未选',
         chosen: false,
@@ -262,48 +263,25 @@ export default {
       this.courseTable = ret
     },
     accessCourseDetail (row) {
+      console.log(this)
       this.detailLoading = true
-
-      let ret = [{
-        teacher: '刘玉生',
-        courseTime: '周一第1,2节',
-        coursePlace: '玉泉曹光彪二期-104(多)',
-        examTime: '2020年6月30日(14:00-16:00)',
-        remainNum: -1,
-        totalNum: 79,
-        chosenNum: 0,
-        chosen: false
-      }, {
-        teacher: '刘玉生',
-        courseTime: '周一第1,2节',
-        coursePlace: '玉泉曹光彪二期-104(多)',
-        examTime: '2020年6月30日(14:00-16:00)',
-        remainNum: -1,
-        totalNum: 79,
-        chosenNum: 0,
-        chosen: true
-      }, {
-        teacher: '刘玉生',
-        courseTime: '周一第1,2节',
-        coursePlace: '玉泉曹光彪二期-104(多)',
-        examTime: '2020年6月30日(14:00-16:00)',
-        remainNum: -1,
-        totalNum: 79,
-        chosenNum: 0,
-        chosen: false
-      }, {
-        teacher: '刘玉生',
-        courseTime: '周一第1,2节',
-        coursePlace: '玉泉曹光彪二期-104(多)',
-        examTime: '2020年6月30日(14:00-16:00)',
-        remainNum: -1,
-        totalNum: 79,
-        chosenNum: 0,
-        chosen: false
-      }]
-      this.chosenCourseDetails = ret
-
-      this.detailLoading = false
+      // let ret = []
+      // console.log({'courseId': row.id, 'stuId': this.stuId})
+      this.$axios.post('/get-classes', {courseId: row.id, stuId: this.stuId})
+        .then(successResponse => {
+          // console.log('successResponse.data')
+          // console.log(successResponse.data)
+          console.log(this)
+          this.set(this.data, 'chosenCourseDetails', successResponse.data)
+          this.set(this.data, 'detailLoading', false)
+          // this.chosenCourseDetails = successResponse.data
+          // this.detailLoading = false
+        })
+        .catch(failResponse => {})
+        .finally(() => this)
+      // this.chosenCourseDetails = ret
+      // console.log('this.chosenCourseDetails')
+      // console.log(this.chosenCourseDetails)
     }
   },
   mounted () {
