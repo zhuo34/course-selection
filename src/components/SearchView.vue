@@ -233,35 +233,101 @@ export default {
     },
     accessMyCourses () {
       this.myCourseLoading = true
+      this.myCourses = []
 
-      let ret = [{
-        filtering: false,
-        id: '21120264',
-        teacher: '刘玉生',
-        time: '周一第1,2节',
-        place: '玉泉曹光彪二期-104(多)'
-      }, {
-        filtering: true,
-        id: '21120264',
-        teacher: '刘玉生',
-        time: '周一第1,2节',
-        place: '玉泉曹光彪二期-104(多)'
-      }]
-      this.updateCourseTable()
-      this.myCourses = ret
-
-      this.myCourseLoading = false
+      this.$axios.post('/get-courses', {stuId: this.stuId})
+        .then(successResponse => {
+          this.myCourses = successResponse.data
+          this.updateCourseTable(successResponse.data)
+          this.myCourseLoading = false
+        })
+        .catch(failResponse => {
+          console.log('fail')
+        })
+        .finally(() => this)
+      // let ret = [{
+      //   filtering: false,
+      //   id: '21120264',
+      //   teacher: '刘玉生',
+      //   time: '周一第1,2节',
+      //   place: '玉泉曹光彪二期-104(多)'
+      // }, {
+      //   filtering: true,
+      //   id: '21120264',
+      //   teacher: '刘玉生',
+      //   time: '周一第1,2节',
+      //   place: '玉泉曹光彪二期-104(多)'
+      // }]
+      // this.updateCourseTable()
+      // this.myCourses = ret
+      // this.myCourseLoading = false
     },
-    updateCourseTable () {
-      // let myCourses = this.myCourses
+    updateCourseTable (chartData) {
       let ret = []
       for (let i = 0; i < 13; i++) {
         ret.push({time: i + 1, mon: '', tue: '', wed: '', thu: '', fri: '', sat: '', sun: ''})
       }
-      ret[10].mon = '软件工程'
-      ret[11].mon = '软件工程'
-      ret[12].mon = '软件工程'
+      let time = []
+      let name = ''
+      for (let i = 0; i < chartData.length; i++) {
+        // go through courses
+        time = chartData[i].time
+        name = chartData[i].name
+        for (let j = 0; j < time.length; j++) {
+          // go through times
+          // weekday, begin, duration
+          let idx = 0
+          switch (time[j].begin) {
+            case 0:
+              idx = 0
+              break
+            case 1:
+              idx = 2
+              break
+            case 2:
+              idx = 5
+              break
+            case 3:
+              idx = 8
+              break
+            case 4:
+              idx = 10
+              break
+          }
+          for (let k = 0; k < time[j].duration; k++) {
+            this.stupidAssign(ret[idx + k], time[j].weekday, name)
+          }
+        }
+      }
+      // ret[10].mon = '软件工程'
+      // ret[11].mon = '软件工程'
+      // ret[12].mon = '软件工程'
       this.courseTable = ret
+    },
+    stupidAssign (chartRow, weekday, name) {
+      switch (weekday) {
+        case 0:
+          chartRow.mon = name
+          break
+        case 1:
+          chartRow.tue = name
+          break
+        case 2:
+          chartRow.wed = name
+          break
+        case 3:
+          chartRow.thu = name
+          break
+        case 4:
+          chartRow.fri = name
+          break
+        case 5:
+          chartRow.sat = name
+          break
+        case 6:
+          chartRow.sun = name
+          break
+      }
     },
     accessCourseDetail (row) {
       this.detailLoading = true
