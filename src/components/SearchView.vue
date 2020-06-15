@@ -18,17 +18,17 @@
           <el-table-column prop="sun" label="星期日" align="center"/>
         </el-table>
         <el-table :data="myCourses" style="width: 100%" border>
-          <el-table-column prop="filtering" label="状态" align="center">
+          <el-table-column prop="isOn" label="状态" align="center">
             <template slot-scope="scope">
-              <span v-if="scope.row.filtering"
-                    style="color: red">筛选中</span>
-              <span v-else
+              <span v-if="scope.row.isOn"
                     style="color: blue">已选上</span>
+              <span v-else
+                    style="color: red">筛选中</span>
             </template>
           </el-table-column>
-          <el-table-column prop="id" label="课程号" align="center"/>
-          <el-table-column prop="teacher" label="教师" align="center"/>
-          <el-table-column prop="time" label="上课时间" align="center"/>
+          <el-table-column prop="cid" label="课程号" align="center"/>
+          <el-table-column prop="tname" label="教师" align="center"/>
+          <el-table-column prop="printTime" label="上课时间" align="center"/>
           <el-table-column prop="place" label="上课地点" align="center"/>
           <el-table-column prop="op" label="操作" align="center">
             <template slot-scope="scope">
@@ -273,7 +273,7 @@ export default {
       for (let i = 0; i < chartData.length; i++) {
         // go through courses
         time = chartData[i].time
-        name = chartData[i].name
+        name = chartData[i].cname
         for (let j = 0; j < time.length; j++) {
           // go through times
           // weekday, begin, duration
