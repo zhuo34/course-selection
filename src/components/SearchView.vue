@@ -235,7 +235,8 @@ export default {
       this.myCourseLoading = true
       this.myCourses = []
 
-      this.$axios.post('/get-courses', {stuId: this.stuId})
+      this.$axios.get('/get-courses', {
+        params: {stuId: this.stuId}})
         .then(successResponse => {
           this.myCourses = successResponse.data
           this.updateCourseTable(successResponse.data)
