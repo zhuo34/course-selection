@@ -59,7 +59,7 @@
 
     <el-table :data="searchResults" style="width: 100%" :row-key="getRowKeys"
               :expand-row-keys="expands" @expand-change="expandSelect"
-              :row-class-name="courseSelected" @row-click="rowClick">
+              :row-class-name="courseSelected" @row-click="rowClick" :key="key_update">
 
       <el-table-column type="expand" align="center">
         <el-table :data="chosenCourseDetails" style="width: 100%"
@@ -121,7 +121,8 @@ export default {
       searchResults: [],
       chosenCourseDetails: [],
       courseTable: [],
-      myCourses: []
+      myCourses: [],
+      key_update: 0
     }
   },
   methods: {
@@ -263,7 +264,6 @@ export default {
       this.courseTable = ret
     },
     accessCourseDetail (row) {
-      console.log(this)
       this.detailLoading = true
       // let ret = []
       // console.log({'courseId': row.id, 'stuId': this.stuId})
@@ -271,13 +271,15 @@ export default {
         .then(successResponse => {
           // console.log('successResponse.data')
           // console.log(successResponse.data)
-          console.log(this)
-          this.set(this.data, 'chosenCourseDetails', successResponse.data)
-          this.set(this.data, 'detailLoading', false)
+          this.chosenCourseDetails = successResponse.data
+          this.detailLoading = false
+          this.key_update = Math.random()
           // this.chosenCourseDetails = successResponse.data
           // this.detailLoading = false
         })
-        .catch(failResponse => {})
+        .catch(failResponse => {
+          console.log('fail')
+        })
         .finally(() => this)
       // this.chosenCourseDetails = ret
       // console.log('this.chosenCourseDetails')
