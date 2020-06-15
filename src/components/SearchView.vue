@@ -265,6 +265,8 @@ export default {
     },
     accessCourseDetail (row) {
       this.detailLoading = true
+      this.chosenCourseDetails = []
+      this.key_update = Math.random()
       // let ret = []
       // console.log({'courseId': row.id, 'stuId': this.stuId})
       this.$axios.post('/get-classes', {courseId: row.id, stuId: this.stuId})
