@@ -38,6 +38,10 @@ public class NamedTuple {
 		map.remove(name);
 	}
 
+	public void replace(String name, Object obj) {
+		map.replace(name, obj);
+	}
+
 	private static Map<String, Object> listToMap(List<String> names, List<Object> objs) {
 		assert names.size() == objs.size();
 		return IntStream.range(0, names.size()).boxed().collect(Collectors.toMap(names::get, objs::get));

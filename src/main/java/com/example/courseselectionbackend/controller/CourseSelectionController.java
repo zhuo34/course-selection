@@ -5,6 +5,8 @@ import com.example.courseselectionbackend.service.CourseSelectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,9 +22,12 @@ public class CourseSelectionController {
 	public List<Map<String, Object>> getClasses(@RequestBody Map<String, Object> params) {
 		String courseId = params.get("courseId").toString();
 		String stuId = params.get("stuId").toString();
-		System.out.println(courseId);
-		System.out.println(stuId);
 		return courseSelectionService.getClasses(courseId, stuId);
 	}
 
+	@CrossOrigin
+	@GetMapping("/get-courses")
+	public List<Map<String, Object>> getCourses(@RequestParam String stuId) {
+		return courseSelectionService.getCourses(stuId);
+	}
 }

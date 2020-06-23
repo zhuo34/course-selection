@@ -65,17 +65,52 @@ public class QueryDslManager {
 	private QCourseClass courseClass = QCourseClass.courseClass;
 	private QCourseSelection courseSelection = QCourseSelection.courseSelection;
 
+	private String printTime(String[] ss) {
+		String[] weekdays = {
+			"一", "二", "三", "四", "五", "六", "日"
+		};
+		int[] times = {0, 2, 5, 8, 10};
+		StringBuilder sb = new StringBuilder();
+		sb.append("星期").append(weekdays[Integer.parseInt(ss[0])]);
+		sb.append(" 第");
+		int begin = times[Integer.parseInt(ss[1])];
+		int end = begin + Integer.parseInt(ss[2]);
+		for (int i = begin; i < end; i++) {
+			if (i > begin)
+				sb.append(",");
+			sb.append(i + 1);
+		}
+		sb.append("节");
+		return sb.toString();
+	}
+
 	public List<Map<String, Object>> findSelectedCourseInfoByStuId(String stuId) {
 		List<String> names = new ArrayList<String>(){{
-			add("isOn"); add("cid"); add("tname"); add("time"); add("place");
+			add("isOn"); add("cid"); add("tname"); add("time"); add("place"); add("cname");
 		}};
 		List<Tuple> tuples = qf().select(courseSelection.isOn, courseClass.courseId, teacher.teaName,
-					courseClass.time, courseClass.place)
-				.from(courseSelection, student, courseClass, teacher)
-				.where(student.stuId.eq(stuId), student.stuId.eq(courseSelection.id.stuId),
+					courseClass.time, courseClass.place, courseInfo.courseName)
+				.from(courseSelection, student, courseClass, teacher, courseInfo)
+				.where(student.stuId.eq(stuId), student.stuId.eq(courseSelection.id.stuId), courseInfo.courseId.eq(courseClass.courseId),
 						courseSelection.id.classId.eq(courseClass.classId), courseClass.teaId.eq(teacher.teaId))
 				.fetch();
-		return NamedTuple.toMapList(tuples, names);
+		return NamedTuple.toMapList(tuples, names, nt -> {
+			String time = nt.getObj("time").toString();
+			String[] times = time.split("_");
+			StringBuilder sb = new StringBuilder();
+			List<Map<String, Integer>> formattedTimes = Arrays.stream(times).map(t -> {
+				String[] ss = t.split("\\|");
+				sb.append(printTime(ss)).append("\n");
+				return new HashMap<String, Integer>() {{
+					put("weekday", Integer.valueOf(ss[0]));
+					put("begin", Integer.valueOf(ss[1]));
+					put("duration", Integer.valueOf(ss[2]));
+				}};
+			}).collect(Collectors.toList());
+			sb.replace(sb.length()-1, sb.length(), "");
+			nt.replace("time", formattedTimes);
+			nt.add("printTime", sb.toString());
+		});
 	}
 
 	public List<Map<String, Object>> findAllCourseClassInfoByCourseId(String courseId, String stuId) {
@@ -89,7 +124,6 @@ public class QueryDslManager {
 				.where(courseInfo.courseId.eq(courseId), courseClass.courseId.eq(courseId),
 						courseClass.teaId.eq(teacher.teaId))
 				.fetch();
-		System.out.println(tuples.size());
 		return NamedTuple.toMapList(tuples, names, nt -> {
 			int classId = (Integer)(nt.getObj("classid"));
 			long allSelectNum = qf().select().from(courseClass, courseSelection)
@@ -111,9 +145,20 @@ public class QueryDslManager {
 			nt.add("chosenNum", allSelectNum - haveSelectedNum);
 			nt.add("chosen", haveSelected != 0);
 			nt.remove("classid");
+
+			String time = nt.getObj("courseTime").toString();
+			String[] times = time.split("_");
+			StringBuilder sb = new StringBuilder();
+			for (String s: times) {
+				sb.append(printTime(s.split("\\|"))).append("\n");
+			}
+			sb.replace(sb.length()-1, sb.length(), "");
+			nt.replace("courseTime", sb.toString());
 		});
 	}
 
-//	public List<Map<String, Object>> findAllProgram
+//	public List<Map<String, Object>> findAllCoursesByConditions() {
+//
+//	}
 
 }

@@ -20,4 +20,9 @@ public class CourseSelectionService {
 	public List<Map<String, Object>> getClasses(String courseId, String stuId) {
 		return queryManager.findAllCourseClassInfoByCourseId(courseId, stuId);
 	}
+
+	@Transactional
+	public List<Map<String, Object>> getCourses(String stuId) {
+		return queryManager.findSelectedCourseInfoByStuId(stuId);
+	}
 }
