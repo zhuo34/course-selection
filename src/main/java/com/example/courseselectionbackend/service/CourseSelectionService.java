@@ -1,7 +1,5 @@
 package com.example.courseselectionbackend.service;
 
-import com.example.courseselectionbackend.model.QStudent;
-import com.example.courseselectionbackend.model.Student;
 import com.example.courseselectionbackend.querydsl.QueryDslManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,13 +14,15 @@ public class CourseSelectionService {
 	@Autowired
 	private QueryDslManager queryManager;
 
-	@Transactional
 	public List<Map<String, Object>> getClasses(String courseId, String stuId) {
-		return queryManager.findAllCourseClassInfoByCourseId(courseId, stuId);
+		return queryManager.findClassInfoByCourseId(courseId, stuId);
 	}
 
-	@Transactional
 	public List<Map<String, Object>> getCourses(String stuId) {
-		return queryManager.findSelectedCourseInfoByStuId(stuId);
+		return queryManager.findSelectedClassInfoByStuId(stuId);
+	}
+
+	public List<Map<String, Object>> searchCourses(String stuId, String courseId, String courseName, String tName, String cTime) {
+		return queryManager.findAllCoursesByConditions(stuId, courseId, courseName, tName, cTime);
 	}
 }

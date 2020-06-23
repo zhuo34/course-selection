@@ -3,25 +3,20 @@ package com.example.courseselectionbackend.querydsl;
 import com.example.courseselectionbackend.model.*;
 import com.example.courseselectionbackend.repository.CourseSelectionRepository;
 import com.example.courseselectionbackend.repository.ProgramRepository;
-import com.querydsl.core.QueryFactory;
 import com.querydsl.core.Tuple;
-import com.querydsl.core.types.dsl.NumberExpression;
+import com.querydsl.core.types.CollectionExpression;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.Data;
+import org.hibernate.SQLQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.naming.Name;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static java.lang.Integer.min;
 
 @Component
 public class QueryDslManager {
@@ -84,7 +79,7 @@ public class QueryDslManager {
 		return sb.toString();
 	}
 
-	public List<Map<String, Object>> findSelectedCourseInfoByStuId(String stuId) {
+	public List<Map<String, Object>> findSelectedClassInfoByStuId(String stuId) {
 		List<String> names = new ArrayList<String>(){{
 			add("isOn"); add("cid"); add("tname"); add("time"); add("place"); add("cname");
 		}};
@@ -113,7 +108,7 @@ public class QueryDslManager {
 		});
 	}
 
-	public List<Map<String, Object>> findAllCourseClassInfoByCourseId(String courseId, String stuId) {
+	public List<Map<String, Object>> findClassInfoByCourseId(String courseId, String stuId) {
 		List<String> names = new ArrayList<String>(){{
 			add("classid"); add("teacher"); add("courseTime"); add("coursePlace"); add("totalNum"); add("examTime");
 		}};
@@ -125,7 +120,7 @@ public class QueryDslManager {
 						courseClass.teaId.eq(teacher.teaId))
 				.fetch();
 		return NamedTuple.toMapList(tuples, names, nt -> {
-			int classId = (Integer)(nt.getObj("classid"));
+			int classId = (int)(nt.getObj("classid"));
 			long allSelectNum = qf().select().from(courseClass, courseSelection)
 					.where(courseClass.classId.eq(classId), courseSelection.id.classId.eq(classId))
 					.fetchCount();
@@ -157,8 +152,50 @@ public class QueryDslManager {
 		});
 	}
 
-//	public List<Map<String, Object>> findAllCoursesByConditions() {
-//
-//	}
+	public List<Map<String, Object>> findAllCoursesByConditions(String stuId, String courseId, String courseName, String tName, String cTime) {
+		List<String> names = new ArrayList<String>(){{
+			add("courseId"); add("courseName"); add("credits"); add("isOn");
+		}};
+
+		ArrayList<BooleanExpression> conds = new ArrayList<>();
+		if (!courseId.isEmpty()) {
+			conds.add(courseInfo.courseId.eq(courseId));
+		}
+		if (!courseName.isEmpty()) {
+			conds.add(courseInfo.courseName.eq(courseName));
+		}
+		if (!tName.isEmpty()) {
+			conds.add(teacher.teaName.eq(tName));
+		}
+		if (!cTime.isEmpty()) {
+			conds.add(courseClass.time.eq(cTime));
+		}
+		List<Tuple> tuples;
+		if (conds.isEmpty()) {
+			tuples = qf()
+					.select(courseInfo.courseId, courseInfo.courseName, courseInfo.courseCredits, courseSelection.isOn.castToNum(Integer.class).max())
+					.from(courseInfo)
+					.join(courseClass).on(courseClass.courseId.eq(courseInfo.courseId))
+					.join(courseSelection).on(courseSelection.id.classId.eq(courseClass.classId), courseSelection.id.stuId.eq(stuId))
+					.join(program).on(program.id.stuId.eq(stuId))
+					.groupBy(courseInfo.courseId, courseInfo.courseName, courseInfo.courseCredits)
+					.fetch();
+		} else {
+			BooleanExpression cond = conds.get(0);
+			for (int i = 1; i < conds.size(); i++) {
+				cond = cond.and(conds.get(i));
+			}
+			tuples = qf()
+					.select(courseInfo.courseId, courseInfo.courseName, courseInfo.courseCredits, courseSelection.isOn.count())
+					.from(courseInfo)
+					.join(courseClass).on(courseClass.courseId.eq(courseInfo.courseId))
+					.join(teacher).on(teacher.teaId.eq(courseClass.teaId))
+					.leftJoin(courseSelection).on(courseSelection.id.classId.eq(courseClass.classId), courseSelection.id.stuId.eq(stuId))
+					.where(cond)
+					.groupBy(courseInfo.courseId, courseInfo.courseName, courseInfo.courseCredits)
+					.fetch();
+		}
+		return NamedTuple.toMapList(tuples, names);
+	}
 
 }

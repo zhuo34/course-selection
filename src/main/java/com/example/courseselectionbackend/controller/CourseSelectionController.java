@@ -30,4 +30,10 @@ public class CourseSelectionController {
 	public List<Map<String, Object>> getCourses(@RequestParam String stuId) {
 		return courseSelectionService.getCourses(stuId);
 	}
+
+	@CrossOrigin
+	@GetMapping("/search-courses")
+	public List<Map<String, Object>> searchCourses(@RequestParam String stuId, @RequestParam String courseId, @RequestParam String courseName, @RequestParam String tName, @RequestParam String cTime) {
+		return courseSelectionService.searchCourses(stuId, courseId, courseName, tName, cTime);
+	}
 }
