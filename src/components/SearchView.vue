@@ -1,7 +1,8 @@
 <template>
   <div v-loading="searchLoading || myCourseLoading">
+    <!--显示课表的按钮以及弹出的课表-->
     <el-row type="flex" justify="space-around" class="func-row">
-      <el-button v-if="showCourseTable" v-popover:tablepop
+      <el-button v-if="!isProgramView" v-popover:tablepop
                  type="primary" round>显示课表</el-button>
 
       <el-popover ref="tablepop" placement="bottom-start" trigger="click">
@@ -73,11 +74,12 @@
 
     </el-row>
 
+    <!--下方的课程列表-->
     <el-table :data="searchResults" style="width: 100%" :row-key="getRowKeys"
               :expand-row-keys="expands" @expand-change="expandSelect"
               :row-class-name="courseSelected" @row-click="rowClick" :key="key_update">
-
-      <el-table-column type="expand" align="center">
+      <!--课程展开信息-->
+      <el-table-column type="expand" align="center" v-if="!isProgramView">
         <el-table :data="chosenCourseDetails" style="width: 100%"
                   :row-class-name="whichCourseSelected" v-loading="detailLoading">
           <el-table-column prop="teacher" sortable label="教师" align="center"/>
@@ -98,13 +100,22 @@
         </el-table>
       </el-table-column>
 
+      <!--课程标题信息-->
       <el-table-column label="课程ID" prop="id" align="center"/>
       <el-table-column label="课程名称" prop="name" align="center"/>
       <el-table-column label="学分" prop="credit" align="center"/>
-      <el-table-column label="选课状态" prop="chosen" align="center">
+      <el-table-column v-if="!isProgramView"
+                       label="选课状态" prop="chosen" align="center">
         <template slot-scope="scope">
           <b v-if="scope.row.chosen">已选</b>
           <span v-else>未选</span>
+        </template>
+      </el-table-column>
+      <el-table-column v-else prop="op" label="操作" align="center">
+        <template slot-scope="scope">
+          <el-button
+            type="info"
+            @click="programAddC(scope.$index)">添加</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -122,8 +133,8 @@ function SearchStruct () {
 
 export default {
   props: {
-    showCourseTable: {
-      default: true
+    isProgramView: {
+      default: false
     }
   },
   name: 'SearchView',
@@ -158,14 +169,18 @@ export default {
       return row.id
     },
     courseSelected ({rowIndex}) {
-      if (this.searchResults[rowIndex].chosen) {
+      if (this.isProgramView) {
+        return ''
+      } else if (this.searchResults[rowIndex].chosen) {
         return 'chosen-row'
       } else {
         return ''
       }
     },
     whichCourseSelected ({rowIndex}) {
-      if (this.chosenCourseDetails[rowIndex].chosen) {
+      if (this.isProgramView) {
+        return ''
+      } else if (this.chosenCourseDetails[rowIndex].chosen) {
         return 'chosen-row'
       } else {
         return ''

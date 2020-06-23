@@ -27,7 +27,7 @@
         <el-col :span="1">
           <el-button v-popover:tablepop type="primary" round>添加</el-button>
           <el-popover ref="tablepop" placement="bottom-start" trigger="click">
-            <search-view :showCourseTable="false"></search-view>
+            <search-view :isProgramView="true"></search-view>
           </el-popover>
         </el-col>
       </el-row>
@@ -50,7 +50,7 @@
         <el-col :span="1">
           <el-button v-popover:tablepop type="primary" round>添加</el-button>
           <el-popover ref="tablepop" placement="bottom-start" trigger="click">
-            <search-view :showCourseTable="false"></search-view>
+            <search-view :isProgramView="true"></search-view>
           </el-popover>
         </el-col>
       </el-row>
