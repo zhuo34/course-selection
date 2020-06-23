@@ -25,8 +25,8 @@
         <el-col :span="11">选修课程</el-col>
         <el-col :span="2">已选学分:{{selectiveCredit}}</el-col>
         <el-col :span="1">
-          <el-button v-popover:tablepop type="primary" round>添加</el-button>
-          <el-popover ref="tablepop" placement="bottom-start" trigger="click">
+          <el-button v-popover:tablepop0 type="primary" round>添加</el-button>
+          <el-popover ref="tablepop0" placement="bottom-start" trigger="click">
             <search-view :isProgramView="true"></search-view>
           </el-popover>
         </el-col>
@@ -65,6 +65,10 @@
           </template>
         </el-table-column>
       </el-table>
+
+      <el-row type="flex" justify="center">
+        <el-button type="success" @click="submit" plain icon="el-icon-check" size="medium">提交</el-button>
+      </el-row>
     </div>
 </template>
 
