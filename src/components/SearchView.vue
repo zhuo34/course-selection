@@ -39,19 +39,35 @@
         </el-table>
       </el-popover>
 
-      <el-select class="search-option" v-model="searchTitle1" placeholder="请选择">
-        <el-option v-for="item in searchTitleOptions" :key="item"
+      <!--Search info 1-->
+      <el-select class="search-option" v-model="searchTitle1"
+                 placeholder="搜索条件" @change="searchTitleChange(1)">
+        <el-option v-for="item in searchTitleOptions" :key="item.label"
+                   v-if="searchTitle2 !== item.value"
+                   :label="item.label" :value="item.value"></el-option>
+      </el-select>
+      <el-input v-if="searchTitle1 !== 'courseTime'"
+                class="search-input" v-model="searchInfo1"
+                prefix-icon="el-icon-search" clearable placeholder="请输入内容"/>
+      <el-select v-else class="search-input" v-model="searchInfo1" placeholder="请选择上课时间">
+        <el-option v-for="item in courseTimeOptions" :key="item"
                    :label="item" :value="item"></el-option>
       </el-select>
-      <el-input class="search-input" v-model="searchInfo1"
-                prefix-icon="el-icon-search" clearable placeholder="请输入内容"/>
 
-      <el-select class="search-option" v-model="searchTitle2" placeholder="请选择">
-        <el-option v-for="item in searchTitleOptions" :key="item"
+      <!--Search info 2-->
+      <el-select class="search-option" v-model="searchTitle2"
+                 placeholder="搜索条件" @change="searchTitleChange(2)">
+        <el-option v-for="item in searchTitleOptions" :key="item.label"
+                   v-if="searchTitle1 !== item.value"
+                   :label="item.label" :value="item.value"></el-option>
+      </el-select>
+      <el-input v-if="searchTitle2 !== 'courseTime'"
+                class="search-input" v-model="searchInfo2"
+                prefix-icon="el-icon-search" clearable placeholder="请输入内容"/>
+      <el-select v-else class="search-input" v-model="searchInfo2" placeholder="请选择上课时间">
+        <el-option v-for="item in courseTimeOptions" :key="item"
                    :label="item" :value="item"></el-option>
       </el-select>
-      <el-input class="search-input" v-model="searchInfo2"
-                prefix-icon="el-icon-search" clearable placeholder="请输入内容"/>
 
       <el-button type="primary" @click="accessSearchResults">查询</el-button>
 
@@ -96,6 +112,14 @@
 </template>
 
 <script>
+function SearchStruct () {
+  this.courseName = ''
+  this.courseID = ''
+  this.teacherName = ''
+  this.courseTime = ''
+  this.coursePlace = ''
+}
+
 export default {
   props: {
     showCourseTable: {
@@ -109,12 +133,8 @@ export default {
       searchLoading: false,
       detailLoading: false,
       myCourseLoading: false,
-      searchTitleOptions: [
-        '课程名称', '课程代码', '教师姓名', '课程类别',
-        '上课时间', '上课地点', '学期'
-      ],
-      searchTitle1: '课程名称',
-      searchTitle2: '课程名称',
+      searchTitle1: '',
+      searchTitle2: '',
       searchInfo1: '',
       searchInfo2: '',
       expands: [],
@@ -122,7 +142,15 @@ export default {
       chosenCourseDetails: [],
       courseTable: [],
       myCourses: [],
-      key_update: 0
+      key_update: 0,
+      searchTitleOptions: [
+        { label: '课程名称', value: 'courseName' },
+        { label: '课程代码', value: 'courseID' },
+        { label: '教师姓名', value: 'teacherName' },
+        { label: '上课时间', value: 'courseTime' },
+        { label: '上课地点', value: 'coursePlace' }
+      ],
+      courseTimeOptions: []
     }
   },
   methods: {
@@ -171,6 +199,10 @@ export default {
     dropCourse (index) {
 
     },
+    searchTitleChange (id) {
+      if (id === 1) this.searchInfo1 = ''
+      else if (id === 2) this.searchInfo2 = ''
+    },
     combineCell ({row, column, rowIndex, columnIndex}) {
       if (row[column.property] === '') {
         return {
@@ -200,8 +232,16 @@ export default {
     // Data access methods
     // 注意：之后要换成异步操作
     accessSearchResults () {
-      this.searchLoading = true
+      let info = new SearchStruct()
+      if (this.searchTitle1) {
+        info[this.searchTitle1] = this.searchInfo1
+      }
+      if (this.searchTitle2) {
+        info[this.searchTitle2] = this.searchInfo2
+      }
+      console.log(info)
 
+      this.searchLoading = true
       let ret = [{
         id: 'C123',
         name: '软件工程',
@@ -358,6 +398,15 @@ export default {
   mounted () {
     this.accessSearchResults()
     this.accessMyCourses()
+
+    // init courseTimeOptions
+    let days = ['一', '二', '三', '四', '五', '六', '日']
+    let times = ['1,2', '3,4', '3,4,5', '6,7,8', '7,8', '9,10', '11,12', '11,12,13']
+    for (let day of days) {
+      for (let time of times) {
+        this.courseTimeOptions.push('星期' + day + ' 第' + time + '节')
+      }
+    }
   }
 }
 </script>
