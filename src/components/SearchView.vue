@@ -128,7 +128,6 @@ function SearchStruct () {
   this.courseID = ''
   this.teacherName = ''
   this.courseTime = ''
-  this.coursePlace = ''
 }
 
 export default {
@@ -158,8 +157,7 @@ export default {
         { label: '课程名称', value: 'courseName' },
         { label: '课程代码', value: 'courseID' },
         { label: '教师姓名', value: 'teacherName' },
-        { label: '上课时间', value: 'courseTime' },
-        { label: '上课地点', value: 'coursePlace' }
+        { label: '上课时间', value: 'courseTime' }
       ],
       courseTimeOptions: []
     }
@@ -264,34 +262,58 @@ export default {
       console.log(info)
 
       this.searchLoading = true
-      let ret = [{
-        id: 'C123',
-        name: '软件工程',
-        state: '未选',
-        chosen: false,
-        credit: 1.0.toFixed(1)
-      }, {
-        id: '21120262',
-        name: '软件工程',
-        state: '未选',
-        chosen: true,
-        credit: 1.5.toFixed(1)
-      }, {
-        id: '21120263',
-        name: '软件工程',
-        state: '未选',
-        chosen: false,
-        credit: 2.0.toFixed(1)
-      }, {
-        id: '21120264',
-        name: '软件工程',
-        state: '未选',
-        chosen: false,
-        credit: 2.5.toFixed(1)
-      }]
-      this.searchResults = ret
+      this.$axios.get('/search-courses', {
+        params: {
+          stuId: this.stuId,
+          courseID: info.courseID,
+          courseName: info.courseName,
+          tName: info.teacherName,
+          cTime: info.courseTime
+        }})
+        .then(successResponse => {
+          console.log(successResponse)
+          // this.searchResults = []
+          // for(let item of successResponse.data) {
+          //   this.searchResults.push({
+          //     id: item.courseId,
+          //     name: item.courseName,
+          //     chosen: item.isSelected > 0,
+          //     credit: item.credits.toFixed(1)
+          //   })
+          // }
+          this.searchLoading = false
+        })
+        .catch(failResponse => {
+          console.log('fail')
+          this.searchLoading = false
+        })
+        .finally(() => this)
 
-      this.searchLoading = false
+      // let ret = [{
+      //   id: 'C123',
+      //   name: '软件工程',
+      //   state: '未选',
+      //   chosen: false,
+      //   credit: 1.0.toFixed(1)
+      // }, {
+      //   id: '21120262',
+      //   name: '软件工程',
+      //   state: '未选',
+      //   chosen: true,
+      //   credit: 1.5.toFixed(1)
+      // }, {
+      //   id: '21120263',
+      //   name: '软件工程',
+      //   state: '未选',
+      //   chosen: false,
+      //   credit: 2.0.toFixed(1)
+      // }, {
+      //   id: '21120264',
+      //   name: '软件工程',
+      //   state: '未选',
+      //   chosen: false,
+      //   credit: 2.5.toFixed(1)
+      // }]
     },
     accessMyCourses () {
       this.myCourseLoading = true
@@ -306,6 +328,7 @@ export default {
         })
         .catch(failResponse => {
           console.log('fail')
+          this.myCourseLoading = false
         })
         .finally(() => this)
       // let ret = [{
