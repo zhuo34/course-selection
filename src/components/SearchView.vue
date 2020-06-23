@@ -51,7 +51,7 @@
                 prefix-icon="el-icon-search" clearable placeholder="请输入内容"/>
       <el-select v-else class="search-input" v-model="searchInfo1" placeholder="请选择上课时间">
         <el-option v-for="item in courseTimeOptions" :key="item"
-                   :label="item" :value="item"></el-option>
+                   :label="item" :value="translateTime(item)"></el-option>
       </el-select>
 
       <!--Search info 2-->
@@ -66,7 +66,7 @@
                 prefix-icon="el-icon-search" clearable placeholder="请输入内容"/>
       <el-select v-else class="search-input" v-model="searchInfo2" placeholder="请选择上课时间">
         <el-option v-for="item in courseTimeOptions" :key="item"
-                   :label="item" :value="item"></el-option>
+                   :label="item" :value="translateTime(item)"></el-option>
       </el-select>
 
       <el-button type="primary" @click="accessSearchResults">查询</el-button>
@@ -202,6 +202,13 @@ export default {
     searchTitleChange (id) {
       if (id === 1) this.searchInfo1 = ''
       else if (id === 2) this.searchInfo2 = ''
+    },
+    translateTime (timeStr) {
+      let time = []
+      time = timeStr.split(' ')
+      let dayDic = {'星期一': '0|', '星期二': '1|', '星期三': '2|', '星期四': '3|', '星期五': '4|', '星期六': '5|', '星期日': '6|'}
+      let timeDic = {'第1,2节': '0|2', '第3,4节': '1|2', '第3,4,5节': '1|3', '第6,7,8节': '2|3', '第7,8节': '2|2', '第9,10节': '3|2', '第11,12节': '4|2', '第11,12,13节': '4|3'}
+      return dayDic[time[0]] + timeDic[time[1]]
     },
     combineCell ({row, column, rowIndex, columnIndex}) {
       if (row[column.property] === '') {
