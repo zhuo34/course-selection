@@ -259,28 +259,27 @@ export default {
       if (this.searchTitle2) {
         info[this.searchTitle2] = this.searchInfo2
       }
-      console.log(info)
+      // console.log(info)
 
       this.searchLoading = true
       this.$axios.get('/search-courses', {
         params: {
           stuId: this.stuId,
-          courseID: info.courseID,
+          courseId: info.courseID,
           courseName: info.courseName,
           tName: info.teacherName,
           cTime: info.courseTime
         }})
         .then(successResponse => {
-          console.log(successResponse)
-          // this.searchResults = []
-          // for(let item of successResponse.data) {
-          //   this.searchResults.push({
-          //     id: item.courseId,
-          //     name: item.courseName,
-          //     chosen: item.isSelected > 0,
-          //     credit: item.credits.toFixed(1)
-          //   })
-          // }
+          this.searchResults = []
+          for (let item of successResponse.data) {
+            this.searchResults.push({
+              id: item.courseId,
+              name: item.courseName,
+              chosen: item.isSelected > 0,
+              credit: item.credits.toFixed(1)
+            })
+          }
           this.searchLoading = false
         })
         .catch(failResponse => {
