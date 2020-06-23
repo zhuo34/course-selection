@@ -33,7 +33,9 @@ public class CourseSelectionController {
 
 	@CrossOrigin
 	@GetMapping("/search-courses")
-	public List<Map<String, Object>> searchCourses(@RequestParam String stuId, @RequestParam String courseId, @RequestParam String courseName, @RequestParam String tName, @RequestParam String cTime) {
+	public List<Map<String, Object>> searchCourses(@RequestParam(defaultValue = "") String stuId, @RequestParam(defaultValue = "") String courseId, @RequestParam(defaultValue = "") String courseName, @RequestParam(defaultValue = "") String tName, @RequestParam(defaultValue = "") String cTime) {
+//		defaultValue = ""
+
 		return courseSelectionService.searchCourses(stuId, courseId, courseName, tName, cTime);
 	}
 }
