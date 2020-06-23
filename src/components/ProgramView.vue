@@ -1,53 +1,67 @@
 <template>
     <div>
-      <el-row  type="flex" justify="center">
-        <p>必修课程  已选学分:</p>
-        <p>{{requiredCredit}}</p>
+      <el-row  type="flex" justify="center" >
+        <el-col :span="2"></el-col>
+        <el-col :span="11">必修课程</el-col>
+        <el-col :span="2">已选学分:{{requiredCredit}}</el-col>
+        <el-col :span="1"></el-col>
       </el-row>
 
-      <el-table :data="requiredCourse" border style="width: 80%" height="250">
-        <el-table-column prop="id" label="课程号" width="180"></el-table-column>
-        <el-table-column prop="name" label="课程名称"  width="180"></el-table-column>
-        <el-table-column prop="credit" label="学分"></el-table-column>
-        <el-table-column label="操作">
+      <el-row>
+      <el-table :data="requiredCourse" border style="width: 80%; margin: auto" height="200">
+        <el-table-column prop="id" label="课程号" width="180" align="center"></el-table-column>
+        <el-table-column prop="name" label="课程名称"  width="180" align="center"></el-table-column>
+        <el-table-column prop="credit" label="学分" align="center"></el-table-column>
+        <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="info" @click="delTableRow(scope.$index, 'requiredCourse')">删除</el-button>
+            <el-button type="danger" @click="delTableRow(scope.$index, 'requiredCourse')">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      </el-row>
+
+      <el-row type="flex" justify="center">
+        <el-col :span="2"></el-col>
+        <el-col :span="11">选修课程</el-col>
+        <el-col :span="2">已选学分:{{selectiveCredit}}</el-col>
+        <el-col :span="1">
+          <el-button v-popover:tablepop type="primary" round>添加</el-button>
+          <el-popover ref="tablepop" placement="bottom-start" trigger="click">
+            <search-view :showCourseTable="false"></search-view>
+          </el-popover>
+        </el-col>
+      </el-row>
+
+      <el-table :data="selectiveCourse" border style="width: 80%; margin: auto" height="200">
+        <el-table-column prop="id" label="课程号" width="180" align="center"></el-table-column>
+        <el-table-column prop="name" label="课程名称"  width="180" align="center"></el-table-column>
+        <el-table-column prop="credit" label="学分" align="center"></el-table-column>
+        <el-table-column prop="state" label="操作" align="center">
+          <template slot-scope="scope">
+            <el-button type="danger" @click="delTableRow(scope.$index, 'selectiveCourse')">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
 
       <el-row type="flex" justify="center">
-        <p>选修课程 已选学分：</p>
-        <p>{{selectiveCredit}}</p>
-        <el-button v-popover:tablepop type="primary" round>添加课程</el-button>
-        <el-popover ref="tablepop" placement="bottom-start" trigger="click">
-          <search-view :showCourseTable="false"></search-view>
-        </el-popover>
+        <el-col :span="2"></el-col>
+        <el-col :span="11">公共课程</el-col>
+        <el-col :span="2">已选学分:{{commonCredit}}</el-col>
+        <el-col :span="1">
+          <el-button v-popover:tablepop type="primary" round>添加</el-button>
+          <el-popover ref="tablepop" placement="bottom-start" trigger="click">
+            <search-view :showCourseTable="false"></search-view>
+          </el-popover>
+        </el-col>
       </el-row>
 
-      <el-table :data="selectiveCourse" border style="width: 80%" height="250">
-        <el-table-column prop="id" label="课程号" width="180"></el-table-column>
-        <el-table-column prop="name" label="课程名称"  width="180"></el-table-column>
-        <el-table-column prop="credit" label="学分"></el-table-column>
-        <el-table-column prop="state" label="操作">
+      <el-table :data="commonCourse" border style="width: 80%; margin: auto" height="200">
+        <el-table-column prop="id" label="课程号" width="180" align="center"></el-table-column>
+        <el-table-column prop="name" label="课程名称"  width="180" align="center"></el-table-column>
+        <el-table-column prop="credit" label="学分" align="center"></el-table-column>
+        <el-table-column prop="state" label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="info" @click="delTableRow(scope.$index, 'selectiveCourse')">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-
-      <el-row type="flex" justify="center">
-        <p>公共课程 已选学分：</p>
-        <p>{{commonCredit}}</p>
-      </el-row>
-
-      <el-table :data="commonCourse" border style="width: 80%" height="250">
-        <el-table-column prop="id" label="课程号" width="180"></el-table-column>
-        <el-table-column prop="name" label="课程名称"  width="180"></el-table-column>
-        <el-table-column prop="credit" label="学分"></el-table-column>
-        <el-table-column prop="state" label="操作">
-          <template slot-scope="scope">
-            <el-button type="info" @click="delTableRow(scope.$index, 'commonCourse')">删除</el-button>
+            <el-button type="danger" @click="delTableRow(scope.$index, 'commonCourse')">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -171,5 +185,12 @@ export default {
 </script>
 
 <style scoped>
+
+  .el-row{
+    margin-bottom: 20px;
+    margin-top: 20px;
+    padding: auto;
+    font-size: 20px;
+  }
 
 </style>
