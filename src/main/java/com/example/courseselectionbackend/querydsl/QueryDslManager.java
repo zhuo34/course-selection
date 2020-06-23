@@ -154,7 +154,7 @@ public class QueryDslManager {
 
 	public List<Map<String, Object>> findAllCoursesByConditions(String stuId, String courseId, String courseName, String tName, String cTime) {
 		List<String> names = new ArrayList<String>(){{
-			add("courseId"); add("courseName"); add("credits"); add("isOn");
+			add("courseId"); add("courseName"); add("credits"); add("isSelected");
 		}};
 
 		ArrayList<BooleanExpression> conds = new ArrayList<>();
