@@ -437,6 +437,9 @@ export default {
       // this.chosenCourseDetails = ret
       // console.log('this.chosenCourseDetails')
       // console.log(this.chosenCourseDetails)
+    },
+    programAddC (index) {
+      this.$emit('addCourse', {id: this.searchResults[index].id, name: this.searchResults[index].name, credit: parseFloat(this.searchResults[index].credit)})
     }
   },
   mounted () {
