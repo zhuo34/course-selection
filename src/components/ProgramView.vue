@@ -64,11 +64,11 @@
 
       <el-row type="flex" justify="center">
         <el-col :span="2">
-          <el-button type="primary" @click="submit" plain icon="el-icon-s-order" size="medium">保存</el-button>
+          <el-button type="primary" @click="clickSave" plain icon="el-icon-s-order" size="medium">保存</el-button>
         </el-col>
         <el-col :span="2"></el-col>
         <el-col :span="2">
-          <el-button type="success" @click="submit" plain icon="el-icon-check" size="medium">提交</el-button>
+          <el-button type="success" @click="clickSubmit" plain icon="el-icon-check" size="medium">提交</el-button>
         </el-col>
       </el-row>
     </div>
@@ -82,6 +82,7 @@ export default {
   data () {
     return {
       stuId: '3170756898',
+      isFinished: false,
       requiredCDel: [],
       selectiveCDel: [],
       commonCDel: [],
@@ -146,7 +147,8 @@ export default {
           this.requiredCDel = []
           this.selectiveCDel = []
           this.commonCDel = []
-          let allCourses = successResponse.data
+          let allCourses = successResponse.data.courses
+          this.isFinished = successResponse.data.isFinished
           for (let i = 0; i < allCourses.length; i++) {
             if (allCourses[i].type === 0) {
               // required
@@ -227,7 +229,19 @@ export default {
         cList.push(courseInfo)
       }
     },
-    submit () {
+    clickSave () {
+      this.submit(false)
+    },
+    clickSubmit () {
+      this.$confirm('提交之后将不能修改培养方案，是否提交？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.submit(true)
+      }).catch(() => {})
+    },
+    submit (isSubmit) {
       let deletedAll = this.requiredCDel.concat(this.selectiveCDel)
       deletedAll = deletedAll.concat(this.commonCDel)
       let deletedId = []
@@ -241,10 +255,14 @@ export default {
           newId.push(newAll[i].id)
         }
       }
-      this.$axios.post('/submit-program', {stuId: this.stuId, insert: newId, delete: deletedId})
+      this.$axios.post('/submit-program', {stuId: this.stuId, isSubmit: isSubmit, insert: newId, delete: deletedId})
         .then(successResponse => {
           console.log('submit success')
-          this.$alert('提交成功！', '选课系统', {
+          let msg = '保存成功！'
+          if (isSubmit) {
+            msg = '提交成功！'
+          }
+          this.$alert(msg, '选课系统', {
             confirmButtonText: '确定',
             callback: action => {}
           })
