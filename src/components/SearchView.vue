@@ -114,8 +114,8 @@
       <el-table-column v-else prop="op" label="操作" align="center">
         <template slot-scope="scope">
           <el-button
-            :disabled="true"
-            type="info"
+            :disabled="stuCollege === scope.row.college && scope.row.required"
+            type="danger"
             @click="programAddC(scope.$index)">添加</el-button>
         </template>
       </el-table-column>
@@ -285,7 +285,9 @@ export default {
                 name: item.courseName,
                 chosen: item.isSelected > 0,
                 credit: item.credits.toFixed(1),
-                department: cnt % 2 === 0? 'hhh': this.stuDepartment,
+                // college: item.college,
+                // required: item.type == '必修？'
+                college: cnt % 2 === 1? 'hhh': this.stuCollege,
                 required: cnt % 2 === 0
               })
               cnt++
