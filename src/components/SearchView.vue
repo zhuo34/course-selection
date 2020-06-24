@@ -234,11 +234,19 @@ export default {
           .finally(() => this)
       }
       this.chosenCourseDetails[index].chosen = !this.chosenCourseDetails[index].chosen
+      for (let i = 0; i < this.searchResults.length; i++) {
+        if (this.expands[0] === this.searchResults[i].id) {
+          this.searchResults[i].chosen = !this.searchResults[i].chosen
+          break
+        }
+      }
     },
     dropCourse (index) {
       this.$axios.post('/delete-class', {classId: this.myCourses[index].classId, stuId: this.stuId})
         .then(successResponse => {
           console.log('Drop class success.')
+          this.accessMyCourses()
+          this.accessSearchResults()
         })
         .catch(failResponse => {
           console.log('fail')
