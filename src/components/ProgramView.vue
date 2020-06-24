@@ -203,21 +203,21 @@ export default {
       if (tableName === 'requiredCourse') {
         if (this.requiredCourse[index].state === 'normal') {
           this.requiredCourse[index].state = 'deleted'
-          this.requiredCDel.push(this.requiredCourse.splice(index, 1))
+          this.requiredCDel.push(this.requiredCourse.splice(index, 1)[0])
         } else {
           this.requiredCourse.splice(index, 1)
         }
       } else if (tableName === 'selectiveCourse') {
         if (this.selectiveCourse[index].state === 'normal') {
           this.selectiveCourse[index].state = 'deleted'
-          this.selectiveCDel.push(this.selectiveCourse.splice(index, 1))
+          this.selectiveCDel.push(this.selectiveCourse.splice(index, 1)[0])
         } else {
           this.selectiveCourse.splice(index, 1)
         }
       } else if (tableName === 'commonCourse') {
         if (this.commonCourse[index].state === 'normal') {
           this.commonCourse[index].state = 'deleted'
-          this.commonCDel.push(this.commonCourse.splice(index, 1))
+          this.commonCDel.push(this.commonCourse.splice(index, 1)[0])
         } else {
           this.commonCourse.splice(index, 1)
         }
@@ -226,6 +226,13 @@ export default {
     addSelectiveCourse (courseInfo) {
       let key = ''
       key = courseInfo.id
+      for (let i = 0; i < this.selectiveCDel.length; i++) {
+        if (key === this.selectiveCDel[i].id) {
+          this.selectiveCDel[i].state = 'normal'
+          this.selectiveCourse.push(this.selectiveCDel.splice(i, 1)[0])
+          return
+        }
+      }
       let repeated = false
       for (let i = 0; i < this.selectiveCourse.length; i++) {
         if (key === this.selectiveCourse[i].id) {
@@ -244,7 +251,31 @@ export default {
       }
     },
     addCommonCourse (courseInfo) {
-      this.commonCourse.push(courseInfo)
+      let key = ''
+      key = courseInfo.id
+      for (let i = 0; i < this.commonCDel.length; i++) {
+        if (key === this.commonCDel[i].id) {
+          this.commonCDel[i].state = 'normal'
+          this.commonCourse.push(this.commonCDel.splice(i, 1)[0])
+          return
+        }
+      }
+      let repeated = false
+      for (let i = 0; i < this.commonCourse.length; i++) {
+        if (key === this.commonCourse[i].id) {
+          repeated = true
+          break
+        }
+      }
+      if (repeated) {
+        this.$alert('培养方案中不能添加重复的课程！', '选课系统', {
+          confirmButtonText: '我知道了',
+          callback: action => {}
+        })
+      } else {
+        courseInfo['state'] = 'new'
+        this.commonCourse.push(courseInfo)
+      }
     },
     submit () {
 
