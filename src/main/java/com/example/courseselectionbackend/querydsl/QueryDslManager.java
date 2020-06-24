@@ -163,11 +163,11 @@ public class QueryDslManager {
 		if (conds.isEmpty()) {
 			tuples = qf()
 					.select(courseInfo.courseId, courseInfo.courseName, courseInfo.courseCredits,
-							courseInfo.ctype, courseInfo.college, courseSelection.isOn.castToNum(Integer.class).max())
+							courseInfo.ctype, courseInfo.college, courseSelection.isOn.count())
 					.from(courseInfo)
 					.join(program).on(program.id.stuId.eq(stuId), program.id.courseId.eq(courseInfo.courseId))
 					.join(courseClass).on(courseClass.courseId.eq(courseInfo.courseId))
-					.join(courseSelection).on(courseSelection.id.classId.eq(courseClass.classId),
+					.leftJoin(courseSelection).on(courseSelection.id.classId.eq(courseClass.classId),
 							courseSelection.id.stuId.eq(program.id.stuId))
 					.groupBy(courseInfo.courseId, courseInfo.courseName, courseInfo.courseCredits)
 					.fetch();
@@ -182,7 +182,8 @@ public class QueryDslManager {
 					.from(courseInfo)
 					.join(courseClass).on(courseClass.courseId.eq(courseInfo.courseId))
 					.join(teacher).on(teacher.teaId.eq(courseClass.teaId))
-					.leftJoin(courseSelection).on(courseSelection.id.classId.eq(courseClass.classId), courseSelection.id.stuId.eq(stuId))
+					.leftJoin(courseSelection).on(courseSelection.id.classId.eq(courseClass.classId),
+							courseSelection.id.stuId.eq(stuId))
 					.where(cond)
 					.groupBy(courseInfo.courseId, courseInfo.courseName, courseInfo.courseCredits)
 					.fetch();
