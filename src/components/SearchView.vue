@@ -214,10 +214,36 @@ export default {
       }
     },
     modifyChosen (index) {
+      if (this.chosenCourseDetails[index].chosen) {
+        this.$axios.post('/delete-class', {classId: this.chosenCourseDetails[index].classId, stuId: this.stuId})
+          .then(successResponse => {
+            console.log('Drop class success.')
+          })
+          .catch(failResponse => {
+            console.log('fail')
+          })
+          .finally(() => this)
+      } else {
+        this.$axios.post('/select-class', {classId: this.chosenCourseDetails[index].classId, stuId: this.stuId})
+          .then(successResponse => {
+            console.log('Select class success.')
+          })
+          .catch(failResponse => {
+            console.log('fail')
+          })
+          .finally(() => this)
+      }
       this.chosenCourseDetails[index].chosen = !this.chosenCourseDetails[index].chosen
     },
     dropCourse (index) {
-
+      this.$axios.post('/delete-class', {classId: this.myCourses[index].classId, stuId: this.stuId})
+        .then(successResponse => {
+          console.log('Drop class success.')
+        })
+        .catch(failResponse => {
+          console.log('fail')
+        })
+        .finally(() => this)
     },
     searchTitleChange (id) {
       if (id === 1) this.searchInfo1 = ''
@@ -429,12 +455,13 @@ export default {
   },
   mounted () {
     this.searchLoading = true
-    this.$axios.get('/search-courses', {
-      params: {}})
+    this.$axios.get('/is-program-finished', {
+      params: {
+        stuId: this.stuId
+      }})
       .then(successResponse => {
-        // console.log(successResponse.data)
-        // this.isFinished = successResponse.data
-        this.isFinished = true
+        this.isFinished = successResponse.data
+        // this.isFinished = true
 
         if (!this.isProgramView && !this.isFinished) {
           this.searchLoading = false

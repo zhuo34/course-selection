@@ -233,6 +233,10 @@ export default {
         courseInfo['state'] = 'new'
         delete courseInfo.type
         cList.push(courseInfo)
+        this.$alert('添加成功！', '选课系统', {
+          confirmButtonText: '我知道了',
+          callback: action => {}
+        })
       }
     },
     clickSave () {
