@@ -79,6 +79,7 @@ export default {
   components: {SearchView},
   data () {
     return {
+      stuId: '3170756898',
       requiredCDel: [],
       selectiveCDel: [],
       commonCDel: [],
@@ -278,7 +279,41 @@ export default {
       }
     },
     submit () {
-
+      let deletedAll = this.requiredCDel.concat(this.selectiveCDel)
+      deletedAll = deletedAll.concat(this.commonCDel)
+      let deletedId = []
+      for (let i = 0; i < deletedAll.length; i++) {
+        deletedId.push(deletedAll[i].id)
+      }
+      let newAll = this.selectiveCourse.concat(this.commonCourse)
+      let newId = []
+      for (let i = 0; i < newAll.length; i++) {
+        if (newAll[i].state === 'new') {
+          newId.push(newAll[i].id)
+        }
+      }
+      this.$axios.post('/submit-program', {stuId: this.stuId, new: newId, delete: deletedId})
+        .then(successResponse => {
+          console.log('submit success')
+          this.$alert('提交成功！', '选课系统', {
+            confirmButtonText: '确定',
+            callback: action => {}
+          })
+        })
+        .catch(failResponse => {
+          console.log('fail')
+        })
+        .finally(() => this)
+      // restore state
+      for (let i = 0; i < this.selectiveCourse.length; i++) {
+        this.selectiveCourse[i].state = 'normal'
+      }
+      for (let i = 0; i < this.commonCourse.length; i++) {
+        this.commonCourse[i].state = 'normal'
+      }
+      this.commonCDel = []
+      this.selectiveCDel = []
+      this.requiredCDel = []
     }
   }
 }
