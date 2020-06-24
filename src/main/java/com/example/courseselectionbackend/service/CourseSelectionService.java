@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,16 +30,16 @@ public class CourseSelectionService {
 	}
 
 	@Transactional
-	public List<Map<String, Object>> getPrograms(String stuId) {
-		if (getProgramState(stuId) == 0) {
+	public Map<String, Object> getPrograms(String stuId) {
+		int programState = queryManager.findProgramState(stuId);
+		if (programState == 0) {
 			queryManager.insertCompulsoryCourses(stuId);
 			queryManager.startProgram(stuId);
 		}
-		return queryManager.findAllProgramsOfStudent(stuId);
-	}
-
-	public int getProgramState(String stuId) {
-		return queryManager.findProgramState(stuId);
+		HashMap<String, Object> ret = new HashMap<>();
+		ret.put("courses", queryManager.findAllProgramsOfStudent(stuId));
+		ret.put("isFinished", programState == 2);
+		return ret;
 	}
 
 	@Transactional

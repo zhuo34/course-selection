@@ -37,8 +37,7 @@ public class CourseSelectionController {
 
 	@CrossOrigin
 	@GetMapping("/get-program")
-	public List<Map<String, Object>> searchCourses(@RequestParam String stuId) {
-		System.out.println(stuId);
+	public Map<String, Object> searchCourses(@RequestParam String stuId) {
 		return courseSelectionService.getPrograms(stuId);
 	}
 

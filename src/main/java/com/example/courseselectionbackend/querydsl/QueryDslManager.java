@@ -177,7 +177,8 @@ public class QueryDslManager {
 				cond = cond.and(conds.get(i));
 			}
 			tuples = qf()
-					.select(courseInfo.courseId, courseInfo.courseName, courseInfo.courseCredits, courseSelection.isOn.count())
+					.select(courseInfo.courseId, courseInfo.courseName, courseInfo.courseCredits,
+							courseInfo.ctype, courseInfo.college, courseSelection.isOn.count())
 					.from(courseInfo)
 					.join(courseClass).on(courseClass.courseId.eq(courseInfo.courseId))
 					.join(teacher).on(teacher.teaId.eq(courseClass.teaId))
