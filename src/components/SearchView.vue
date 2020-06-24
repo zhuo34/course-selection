@@ -1,10 +1,10 @@
 <template>
-  <div v-if="!isProgramView && !isFinished">请先确定您的培养方案！</div>
+  <div v-if="!isAdmin && !isProgramView && !isFinished">请先确定您的培养方案！</div>
   <div v-else
        v-loading="searchLoading || myCourseLoading">
+    <el-input v-if="isAdmin" v-model="stuId" placeholder="请输入学生学号"/>
     <!--显示课表的按钮以及弹出的课表-->
     <el-row type="flex" justify="space-around" class="func-row">
-      <el-input v-if="isAdmin" v-model="stuId" placeholder="请输入学生学号"/>
       <el-button v-if="!isProgramView&&!isAdmin" v-popover:tablepop
                  type="primary" round @click="accessMyCourses">显示课表</el-button>
 
@@ -136,7 +136,9 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-button v-if="isAdmin" type="primary" @click="startFilter">开始筛选</el-button>
+    <el-row style="margin-top: 10px">
+      <el-button v-if="isAdmin" type="primary" @click="startFilter">开始筛选</el-button>
+    </el-row>
   </div>
 </template>
 
@@ -238,6 +240,11 @@ export default {
     },
     modifyChosen (index) {
       if (this.chosenCourseDetails[index].chosen) {
+        if (!this.isAdmin) {
+          this.chosenCourseDetails[index].chosenNum++
+        } else {
+          this.chosenCourseDetails[index].remainNum++
+        }
         this.$axios.post('/delete-class', {classId: this.chosenCourseDetails[index].classId, stuId: this.stuId})
           .then(successResponse => {
             console.log('Drop class success.')
@@ -257,6 +264,7 @@ export default {
             })
             return
           }
+          this.chosenCourseDetails[index].chosenNum++
           this.$axios.post('/select-class', {classId: this.chosenCourseDetails[index].classId, stuId: this.stuId})
             .then(successResponse => {
               console.log('Select class success.')
@@ -267,6 +275,7 @@ export default {
             })
             .finally(() => this)
         } else {
+          this.chosenCourseDetails[index].remainNum++
           this.$axios.post('/admin/select-class', {classId: this.chosenCourseDetails[index].classId, stuId: this.stuId})
             .then(successResponse => {
               console.log('Select class success.')
