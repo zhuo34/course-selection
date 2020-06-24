@@ -611,6 +611,9 @@ export default {
 .el-table__body tr:current-row > td {
   background: initial !important;
 }
+.el-table .cell {
+  white-space: pre-line;
+}
 .course-table-row {
   pointer-events: none;
 }
