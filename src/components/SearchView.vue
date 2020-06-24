@@ -49,13 +49,19 @@
                    v-if="searchTitle2 !== item.value"
                    :label="item.label" :value="item.value"></el-option>
       </el-select>
-      <el-input v-if="searchTitle1 !== 'courseTime'"
-                class="search-input" v-model="searchInfo1"
-                prefix-icon="el-icon-search" clearable placeholder="请输入内容"/>
-      <el-select v-else class="search-input" v-model="searchInfo1" placeholder="请选择上课时间">
+      <el-select v-if="searchTitle1 === 'courseTime'" class="search-input"
+                 v-model="searchInfo1" placeholder="请选择上课时间">
         <el-option v-for="item in courseTimeOptions" :key="item"
                    :label="item" :value="translateTime(item)"></el-option>
       </el-select>
+      <el-select v-else-if="searchTitle1 === 'courseType'" class="search-input"
+                 v-model="searchInfo1" placeholder="请选择课程类别">
+        <el-option v-for="item in courseTypeOptions" :key="item"
+                   :label="item" :value="item"></el-option>
+      </el-select>
+      <el-input v-else
+                class="search-input" v-model="searchInfo1"
+                prefix-icon="el-icon-search" clearable placeholder="请输入内容"/>
 
       <!--Search info 2-->
       <el-select class="search-option" v-model="searchTitle2"
@@ -64,13 +70,19 @@
                    v-if="searchTitle1 !== item.value"
                    :label="item.label" :value="item.value"></el-option>
       </el-select>
-      <el-input v-if="searchTitle2 !== 'courseTime'"
-                class="search-input" v-model="searchInfo2"
-                prefix-icon="el-icon-search" clearable placeholder="请输入内容"/>
-      <el-select v-else class="search-input" v-model="searchInfo2" placeholder="请选择上课时间">
+      <el-select v-if="searchTitle2 === 'courseTime'" class="search-input"
+                 v-model="searchInfo2" placeholder="请选择上课时间">
         <el-option v-for="item in courseTimeOptions" :key="item"
                    :label="item" :value="translateTime(item)"></el-option>
       </el-select>
+      <el-select v-else-if="searchTitle2 === 'courseType'" class="search-input"
+                 v-model="searchInfo2" placeholder="请选择课程类别">
+        <el-option v-for="item in courseTypeOptions" :key="item"
+                   :label="item" :value="item"></el-option>
+      </el-select>
+      <el-input v-else
+                class="search-input" v-model="searchInfo2"
+                prefix-icon="el-icon-search" clearable placeholder="请输入内容"/>
 
       <el-button type="primary" @click="accessSearchResults">查询</el-button>
 
@@ -131,6 +143,7 @@ function SearchStruct () {
   this.courseID = ''
   this.teacherName = ''
   this.courseTime = ''
+  this.courseType = ''
 }
 
 export default {
@@ -162,7 +175,11 @@ export default {
         { label: '课程名称', value: 'courseName' },
         { label: '课程代码', value: 'courseID' },
         { label: '教师姓名', value: 'teacherName' },
-        { label: '上课时间', value: 'courseTime' }
+        { label: '上课时间', value: 'courseTime' },
+        { label: '课程类别', value: 'courseType' }
+      ],
+      courseTypeOptions: [
+        '必修课', '选修课', '公共课'
       ],
       courseTimeOptions: []
     }
@@ -272,6 +289,17 @@ export default {
       let timeDic = {'第1,2节': '0|2', '第3,4节': '1|2', '第3,4,5节': '1|3', '第6,7,8节': '2|3', '第7,8节': '2|2', '第9,10节': '3|2', '第11,12节': '4|2', '第11,12,13节': '4|3'}
       return dayDic[time[0]] + timeDic[time[1]]
     },
+    translateCourseType (typeStr) {
+      if (typeStr === '必修课') {
+        return 0
+      } else if (typeStr === '选修课') {
+        return 1
+      } else if (typeStr === '公共课') {
+        return 2
+      } else {
+        return -1
+      }
+    },
     combineCell ({row, column, rowIndex, columnIndex}) {
       if (row[column.property] === '') {
         return {
@@ -311,14 +339,16 @@ export default {
       // console.log(info)
 
       this.searchLoading = true
-      this.$axios.get('/search-courses', {
-        params: {
-          stuId: this.stuId,
-          courseId: info.courseID,
-          courseName: info.courseName,
-          tName: info.teacherName,
-          cTime: info.courseTime
-        }})
+      let params = {
+        stuId: this.stuId,
+        courseId: info.courseID,
+        courseName: info.courseName,
+        tName: info.teacherName,
+        cTime: info.courseTime,
+        type: this.translateCourseType(info.courseType)
+      }
+      // console.log(params)
+      this.$axios.get('/search-courses', {params: params})
         .then(successResponse => {
           // console.log(successResponse.data)
           this.searchResults = []
