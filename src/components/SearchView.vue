@@ -114,6 +114,7 @@
       <el-table-column v-else prop="op" label="操作" align="center">
         <template slot-scope="scope">
           <el-button
+            :disabled="true"
             type="info"
             @click="programAddC(scope.$index)">添加</el-button>
         </template>
@@ -140,6 +141,7 @@ export default {
   data () {
     return {
       stuId: '3170756898',
+      stuDepartment: 'CS',
       searchLoading: false,
       detailLoading: false,
       myCourseLoading: false,
@@ -264,57 +266,65 @@ export default {
       // console.log(info)
 
       this.searchLoading = true
-      this.$axios.get('/search-courses', {
-        params: {
-          stuId: this.stuId,
-          courseId: info.courseID,
-          courseName: info.courseName,
-          tName: info.teacherName,
-          cTime: info.courseTime
-        }})
-        .then(successResponse => {
-          this.searchResults = []
-          for (let item of successResponse.data) {
-            this.searchResults.push({
-              id: item.courseId,
-              name: item.courseName,
-              chosen: item.isSelected > 0,
-              credit: item.credits.toFixed(1)
-            })
-          }
-          this.searchLoading = false
-        })
-        .catch(failResponse => {
-          console.log('fail')
-          this.searchLoading = false
-        })
-        .finally(() => this)
-
-      // let ret = [{
-      //   id: 'C123',
-      //   name: '软件工程',
-      //   state: '未选',
-      //   chosen: false,
-      //   credit: 1.0.toFixed(1)
-      // }, {
-      //   id: '21120262',
-      //   name: '软件工程',
-      //   state: '未选',
-      //   chosen: true,
-      //   credit: 1.5.toFixed(1)
-      // }, {
-      //   id: '21120263',
-      //   name: '软件工程',
-      //   state: '未选',
-      //   chosen: false,
-      //   credit: 2.0.toFixed(1)
-      // }, {
-      //   id: '21120264',
-      //   name: '软件工程',
-      //   state: '未选',
-      //   chosen: false,
-      //   credit: 2.5.toFixed(1)
-      // }]
+      if (this.isProgramView) {
+        // 从培养方案里面访问搜索引擎
+        this.$axios.get('/search-courses', {
+          params: {
+            stuId: this.stuId,
+            courseId: info.courseID,
+            courseName: info.courseName,
+            tName: info.teacherName,
+            cTime: info.courseTime
+          }})
+          .then(successResponse => {
+            this.searchResults = []
+            let cnt = 0
+            for (let item of successResponse.data) {
+              this.searchResults.push({
+                id: item.courseId,
+                name: item.courseName,
+                chosen: item.isSelected > 0,
+                credit: item.credits.toFixed(1),
+                department: cnt % 2 === 0? 'hhh': this.stuDepartment,
+                required: cnt % 2 === 0
+              })
+              cnt++
+            }
+            this.searchLoading = false
+          })
+          .catch(failResponse => {
+            console.log('search courses in program: fail')
+            this.searchLoading = false
+          })
+          .finally(() => this)
+      } else {
+        // 直接访问搜索引擎
+        this.$axios.get('/search-courses', {
+          params: {
+            stuId: this.stuId,
+            courseId: info.courseID,
+            courseName: info.courseName,
+            tName: info.teacherName,
+            cTime: info.courseTime
+          }})
+          .then(successResponse => {
+            this.searchResults = []
+            for (let item of successResponse.data) {
+              this.searchResults.push({
+                id: item.courseId,
+                name: item.courseName,
+                chosen: item.isSelected > 0,
+                credit: item.credits.toFixed(1)
+              })
+            }
+            this.searchLoading = false
+          })
+          .catch(failResponse => {
+            console.log('search courses: fail')
+            this.searchLoading = false
+          })
+          .finally(() => this)
+      }
     },
     accessMyCourses () {
       this.myCourseLoading = true
