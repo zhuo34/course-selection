@@ -241,9 +241,9 @@ export default {
     modifyChosen (index) {
       if (this.chosenCourseDetails[index].chosen) {
         if (!this.isAdmin) {
-          this.chosenCourseDetails[index].chosenNum--
+          this.chosenCourseDetails[index].chosenNum++
         } else {
-          this.chosenCourseDetails[index].remainNum--
+          this.chosenCourseDetails[index].remainNum++
         }
         this.$axios.post('/delete-class', {classId: this.chosenCourseDetails[index].classId, stuId: this.stuId})
           .then(successResponse => {
@@ -264,7 +264,7 @@ export default {
             })
             return
           }
-          this.chosenCourseDetails[index].chosenNum++
+          this.chosenCourseDetails[index].chosenNum--
           this.$axios.post('/select-class', {classId: this.chosenCourseDetails[index].classId, stuId: this.stuId})
             .then(successResponse => {
               console.log('Select class success.')
@@ -275,7 +275,7 @@ export default {
             })
             .finally(() => this)
         } else {
-          this.chosenCourseDetails[index].remainNum++
+          this.chosenCourseDetails[index].remainNum--
           this.$axios.post('/admin/select-class', {classId: this.chosenCourseDetails[index].classId, stuId: this.stuId})
             .then(successResponse => {
               console.log('Select class success.')
