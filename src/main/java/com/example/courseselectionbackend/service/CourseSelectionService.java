@@ -2,16 +2,13 @@ package com.example.courseselectionbackend.service;
 
 import com.example.courseselectionbackend.model.CourseSelection;
 import com.example.courseselectionbackend.model.Program;
-import com.example.courseselectionbackend.model.Student;
 import com.example.courseselectionbackend.model.primarykey.CourseSelectionPK;
 import com.example.courseselectionbackend.querydsl.QueryDslManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class CourseSelectionService {
@@ -59,11 +56,68 @@ public class CourseSelectionService {
 
 	@Transactional
 	public void selectClass(CourseSelectionPK id) {
-		queryManager.insertSelection(CourseSelection.builder().id(id).build());
+		queryManager.saveSelection(CourseSelection.builder().id(id).build());
 	}
 
 	@Transactional
 	public void deleteClass(CourseSelectionPK id) {
 		queryManager.deleteSelection(CourseSelection.builder().id(id).build());
+	}
+
+	@Transactional
+	public void selectClassAdmin(CourseSelectionPK id) {
+		queryManager.saveSelection(CourseSelection.builder().id(id).isOn(true).build());
+	}
+
+	@Transactional
+	public void filterAllSelection() {
+		List<CourseSelection> selections = queryManager.getAllSelection();
+		List<CourseSelection> subSelections = new ArrayList<>();
+		int classId = -1;
+		int selectedNum = 0;
+		for (CourseSelection selection : selections) {
+			int thisClassId = selection.getId().getClassId();
+			if (thisClassId == classId) {
+				if (selection.isOn())
+					selectedNum++;
+				else
+					subSelections.add(selection);
+			} else {
+				filterOneClass(classId, selectedNum, subSelections);
+				System.out.println(subSelections.size());
+				if (selection.isOn())
+					selectedNum = 1;
+				else
+					subSelections.add(selection);
+				classId = thisClassId;
+			}
+		}
+		filterOneClass(classId, selectedNum, subSelections);
+	}
+
+	private void filterOneClass(int classId, int selectedNum, List<CourseSelection> subSelections) {
+		if (classId < 0) return;
+		Random random= new Random();
+		int capacity = queryManager.getClassCapacity(classId);
+		int rest = capacity - selectedNum;
+		if (subSelections.size() > rest) {
+			List<CourseSelection> onSelections = new ArrayList<>();
+			while (rest > 0) {
+				int index = random.nextInt(subSelections.size());
+				CourseSelection lucky = subSelections.get(index);
+				lucky.setOn(true);
+				onSelections.add(lucky);
+				subSelections.remove(lucky);
+				rest--;
+			}
+			queryManager.saveSelection(onSelections);
+			queryManager.deleteSelection(subSelections);
+		} else {
+			for (CourseSelection lucky: subSelections) {
+				lucky.setOn(true);
+			}
+			queryManager.saveSelection(subSelections);
+		}
+		subSelections.clear();
 	}
 }

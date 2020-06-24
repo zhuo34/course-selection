@@ -72,4 +72,16 @@ public class CourseSelectionController {
 	public void deleteClass(@RequestBody CourseSelectionPK id) {
 		courseSelectionService.deleteClass(id);
 	}
+
+	@CrossOrigin
+	@PostMapping("/admin/select-class")
+	public void selectClassAdmin(@RequestBody CourseSelectionPK id) {
+		courseSelectionService.selectClassAdmin(id);
+	}
+
+	@CrossOrigin
+	@PostMapping("/admin/filter")
+	public void filterAllSelection() {
+		courseSelectionService.filterAllSelection();
+	}
 }

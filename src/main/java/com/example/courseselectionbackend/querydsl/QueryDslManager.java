@@ -68,6 +68,25 @@ public class QueryDslManager {
 		return sb.toString();
 	}
 
+	private List<Object> cvtTime(String time) {
+		String[] times = time.split("_");
+		StringBuilder sb = new StringBuilder();
+		List<Map<String, Integer>> formattedTimes = Arrays.stream(times).map(t -> {
+			String[] ss = t.split("\\|");
+			sb.append(printTime(ss)).append("\n");
+			return new HashMap<String, Integer>() {{
+				put("weekday", Integer.valueOf(ss[0]));
+				put("begin", Integer.valueOf(ss[1]));
+				put("duration", Integer.valueOf(ss[2]));
+			}};
+		}).collect(Collectors.toList());
+		sb.replace(sb.length()-1, sb.length(), "");
+		List<Object> ret = new ArrayList<>();
+		ret.add(formattedTimes);
+		ret.add(sb.toString());
+		return ret;
+	}
+
 	// course class
 	public List<Map<String, Object>> findSelectedClassInfoByStuId(String stuId) {
 		List<String> names = new ArrayList<String>(){{
@@ -81,20 +100,9 @@ public class QueryDslManager {
 				.fetch();
 		return NamedTuple.toMapList(names, tuples, nt -> {
 			String time = nt.getObj("time").toString();
-			String[] times = time.split("_");
-			StringBuilder sb = new StringBuilder();
-			List<Map<String, Integer>> formattedTimes = Arrays.stream(times).map(t -> {
-				String[] ss = t.split("\\|");
-				sb.append(printTime(ss)).append("\n");
-				return new HashMap<String, Integer>() {{
-					put("weekday", Integer.valueOf(ss[0]));
-					put("begin", Integer.valueOf(ss[1]));
-					put("duration", Integer.valueOf(ss[2]));
-				}};
-			}).collect(Collectors.toList());
-			sb.replace(sb.length()-1, sb.length(), "");
-			nt.replace("time", formattedTimes);
-			nt.add("printTime", sb.toString());
+			List<Object> goodTime = cvtTime(time);
+			nt.replace("time", goodTime.get(0));
+			nt.add("printTime", goodTime.get(1));
 		});
 	}
 
@@ -132,13 +140,9 @@ public class QueryDslManager {
 			nt.remove("classid");
 
 			String time = nt.getObj("courseTime").toString();
-			String[] times = time.split("_");
-			StringBuilder sb = new StringBuilder();
-			for (String s: times) {
-				sb.append(printTime(s.split("\\|"))).append("\n");
-			}
-			sb.replace(sb.length()-1, sb.length(), "");
-			nt.replace("courseTime", sb.toString());
+			List<Object> goodTime = cvtTime(time);
+			nt.add("time", goodTime.get(0));
+			nt.replace("courseTime", goodTime.get(1));
 		});
 	}
 
@@ -287,12 +291,57 @@ public class QueryDslManager {
 	}
 
 	// class selection
-	public void insertSelection(CourseSelection selection) {
+	public void saveSelection(CourseSelection selection) {
 		courseSelectionRepository.save(selection);
+	}
+
+	public void saveSelection(List<CourseSelection> selection) {
+		courseSelectionRepository.saveAll(selection);
 	}
 
 	public void deleteSelection(CourseSelection selection) {
 		courseSelectionRepository.delete(selection);
+	}
+
+	public void deleteSelection(List<CourseSelection> selection) {
+		courseSelectionRepository.deleteAll(selection);
+	}
+
+	public List<CourseSelection> getAllSelection() {
+		return qf().selectFrom(courseSelection)
+				.orderBy(courseSelection.id.classId.asc())
+				.fetch();
+	}
+
+	public List<Integer> getAllNotSelectedClass() {
+		return qf().select(courseSelection.id.classId)
+				.from(courseSelection)
+				.where(courseSelection.isOn.eq(false))
+				.fetch();
+	}
+
+	public int getClassCapacity(int classId) {
+		return qf()
+				.select(courseClass.capacity)
+				.from(courseClass)
+				.where(courseClass.classId.eq(classId))
+				.fetchFirst();
+	}
+
+	public long getSelectedNumOfClass(int classId) {
+		return qf().select(courseSelection.id.stuId)
+				.from(courseSelection)
+				.where(courseSelection.isOn.eq(true), courseSelection.id.classId.eq(classId))
+				.orderBy(courseSelection.id.classId.asc())
+				.fetchCount();
+	}
+
+	public List<String> getAllNotOnStudentOfClass(int classId) {
+		return qf().select(courseSelection.id.stuId)
+				.from(courseSelection)
+				.where(courseSelection.isOn.eq(false), courseSelection.id.classId.eq(classId))
+				.orderBy(courseSelection.id.classId.asc())
+				.fetch();
 	}
 
 	// major
