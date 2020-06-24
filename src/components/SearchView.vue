@@ -192,6 +192,7 @@ export default {
       }
     },
     expandSelect (row, expandedRows) {
+      if (this.isProgramView) return
       this.expands = []
       if (expandedRows.length > 0 && row) {
         this.expands.push(row.id)
@@ -199,6 +200,7 @@ export default {
       }
     },
     rowClick (row, event, column) {
+      if (this.isProgramView) return
       let collapse = this.expands.indexOf(row.id) >= 0
       this.expands = []
       if (!collapse) {
