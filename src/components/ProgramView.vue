@@ -158,7 +158,6 @@ export default {
           this.commonCDel = []
           let allCourses = successResponse.data.courses
           this.isFinished = successResponse.data.isFinished
-          this.isFinished = false
           this.totCreditStand = successResponse.data.minTotalCredit
           this.selCreditStand = successResponse.data.minOptionalCredit
           this.comCreditStand = successResponse.data.minPublicCredit
