@@ -89,7 +89,7 @@ export default {
     return {
       stuId: '3170756898',
       isFinished: false,
-      reqCreditStand: 0.0,
+      totCreditStand: 0.0,
       selCreditStand: 0.0,
       comCreditStand: 0.0,
       requiredCDel: [],
@@ -158,7 +158,7 @@ export default {
           this.commonCDel = []
           let allCourses = successResponse.data.courses
           this.isFinished = successResponse.data.isFinished
-          this.reqCreditStand = successResponse.data.minTotalCredit
+          this.totCreditStand = successResponse.data.minTotalCredit
           this.selCreditStand = successResponse.data.minOptionalCredit
           this.comCreditStand = successResponse.data.minPublicCredit
           for (let i = 0; i < allCourses.length; i++) {
@@ -250,7 +250,7 @@ export default {
     },
     clickSubmit () {
       // judge if credit is enough
-      if (this.requiredCredit >= this.reqCreditStand && this.selectiveCredit >= this.selCreditStand && this.commonCredit >= this.comCreditStand) {
+      if (this.requiredCredit + this.selectiveCredit + this.commonCredit >= this.totCreditStand && this.selectiveCredit >= this.selCreditStand && this.commonCredit >= this.comCreditStand) {
         this.$confirm('提交之后将不能修改培养方案，是否提交？', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -260,14 +260,18 @@ export default {
         }).catch(() => {})
       } else {
         let msg = ''
-        if (this.requiredCredit < this.reqCreditStand) {
-          msg = '必修课程'
-        } else if (this.selectiveCredit < this.selCreditStand) {
-          msg = '选修课程'
+        let offset = 0.0
+        if (this.selectiveCredit < this.selCreditStand) {
+          msg = '选修课程已选分数'
+          offset = this.selCreditStand - this.selectiveCredit
+        } else if (this.commonCredit < this.comCreditStand) {
+          msg = '公共课程已选分数'
+          offset = this.comCreditStand - this.commonCredit
         } else {
-          msg = '公共课程'
+          msg = '所有课程总分数'
+          offset = this.totCreditStand - this.requiredCredit - this.selectiveCredit - this.commonCredit
         }
-        this.$alert(msg + '已选分数不满足要求。', '选课系统', {
+        this.$alert(msg + '不满足要求，差' + offset.toString() + '分。', '选课系统', {
           confirmButtonText: '确定',
           callback: action => {}
         })
