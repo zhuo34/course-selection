@@ -158,6 +158,7 @@ export default {
           this.commonCDel = []
           let allCourses = successResponse.data.courses
           this.isFinished = successResponse.data.isFinished
+          this.isFinished = false
           this.totCreditStand = successResponse.data.minTotalCredit
           this.selCreditStand = successResponse.data.minOptionalCredit
           this.comCreditStand = successResponse.data.minPublicCredit
@@ -220,6 +221,14 @@ export default {
         if (key === cDel[i].id) {
           cDel[i].state = 'normal'
           cList.push(cDel.splice(i, 1)[0])
+          // this.$alert('添加成功！', '选课系统', {
+          //   confirmButtonText: '我知道了',
+          //   callback: action => {}
+          // })
+          this.$message({
+            message: '添加成功！',
+            type: 'success'
+          });
           return
         }
       }
@@ -231,18 +240,26 @@ export default {
         }
       }
       if (repeated) {
-        this.$alert('培养方案中不能添加重复的课程！', '选课系统', {
-          confirmButtonText: '我知道了',
-          callback: action => {}
-        })
+        // this.$alert('培养方案中不能添加重复的课程！', '选课系统', {
+        //   confirmButtonText: '我知道了',
+        //   callback: action => {}
+        // })
+        this.$message({
+          message: '培养方案中不能添加重复的课程！',
+          type: 'error'
+        });
       } else {
         courseInfo['state'] = 'new'
         delete courseInfo.type
         cList.push(courseInfo)
-        this.$alert('添加成功！', '选课系统', {
-          confirmButtonText: '我知道了',
-          callback: action => {}
-        })
+        // this.$alert('添加成功！', '选课系统', {
+        //   confirmButtonText: '我知道了',
+        //   callback: action => {}
+        // })
+        this.$message({
+          message: '添加成功！',
+          type: 'success'
+        });
       }
     },
     clickSave () {
