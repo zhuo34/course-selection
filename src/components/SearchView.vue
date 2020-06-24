@@ -266,67 +266,34 @@ export default {
       // console.log(info)
 
       this.searchLoading = true
-      if (this.isProgramView) {
-        // 从培养方案里面访问搜索引擎
-        this.$axios.get('/search-courses', {
-          params: {
-            stuId: this.stuId,
-            courseId: info.courseID,
-            courseName: info.courseName,
-            tName: info.teacherName,
-            cTime: info.courseTime
-          }})
-          .then(successResponse => {
-            this.searchResults = []
-            let cnt = 0
-            for (let item of successResponse.data) {
-              this.searchResults.push({
-                id: item.courseId,
-                name: item.courseName,
-                chosen: item.isSelected > 0,
-                credit: item.credits.toFixed(1),
-                // college: item.college,
-                // required: item.type == '必修？'
-                college: cnt % 2 === 1? 'hhh': this.stuCollege,
-                required: cnt % 2 === 0
-              })
-              cnt++
-            }
-            this.searchLoading = false
-          })
-          .catch(failResponse => {
-            console.log('search courses in program: fail')
-            this.searchLoading = false
-          })
-          .finally(() => this)
-      } else {
-        // 直接访问搜索引擎
-        this.$axios.get('/search-courses', {
-          params: {
-            stuId: this.stuId,
-            courseId: info.courseID,
-            courseName: info.courseName,
-            tName: info.teacherName,
-            cTime: info.courseTime
-          }})
-          .then(successResponse => {
-            this.searchResults = []
-            for (let item of successResponse.data) {
-              this.searchResults.push({
-                id: item.courseId,
-                name: item.courseName,
-                chosen: item.isSelected > 0,
-                credit: item.credits.toFixed(1)
-              })
-            }
-            this.searchLoading = false
-          })
-          .catch(failResponse => {
-            console.log('search courses: fail')
-            this.searchLoading = false
-          })
-          .finally(() => this)
-      }
+      this.$axios.get('/search-courses', {
+        params: {
+          stuId: this.stuId,
+          courseId: info.courseID,
+          courseName: info.courseName,
+          tName: info.teacherName,
+          cTime: info.courseTime
+        }})
+        .then(successResponse => {
+          console.log(successResponse.data)
+          this.searchResults = []
+          for (let item of successResponse.data) {
+            this.searchResults.push({
+              id: item.courseId,
+              name: item.courseName,
+              chosen: item.isSelected > 0,
+              credit: item.credits.toFixed(1),
+              college: item.college,
+              required: !item.type
+            })
+          }
+          this.searchLoading = false
+        })
+        .catch(failResponse => {
+          console.log('search courses: fail')
+          this.searchLoading = false
+        })
+        .finally(() => this)
     },
     accessMyCourses () {
       this.myCourseLoading = true
