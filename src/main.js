@@ -9,7 +9,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 Vue.use(ElementUI)
 
 let axios = require('axios')
-axios.defaults.baseURL = 'http://localhost:1214/api'
+axios.defaults.baseURL = 'http://10.181.142.105:1214/api'
 Vue.prototype.$axios = axios
 Vue.config.productionTip = false
 
