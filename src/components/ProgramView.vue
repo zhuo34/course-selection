@@ -83,90 +83,10 @@ export default {
       requiredCDel: [],
       selectiveCDel: [],
       commonCDel: [],
-      requiredCourse: [{
-        id: '21120261',
-        name: '软件工程',
-        credit: 2.5,
-        state: 'normal'
-      }, {
-        id: '21120262',
-        name: '软件工程',
-        credit: 2.5,
-        state: 'normal'
-      }, {
-        id: '21120263',
-        name: '软件工程',
-        credit: 2.5,
-        state: 'normal'
-      }, {
-        id: '21120264',
-        name: '软件工程',
-        credit: 2.5,
-        state: 'normal'
-      }],
-      selectiveCourse: [{
-        id: '21120261',
-        name: '软件工程',
-        credit: 2.5,
-        state: 'normal'
-      }, {
-        id: '21120262',
-        name: '软件工程',
-        credit: 2.5,
-        state: 'normal'
-      }, {
-        id: '21120263',
-        name: '软件工程',
-        credit: 2.5,
-        state: 'normal'
-      }, {
-        id: '21120264',
-        name: '软件工程',
-        credit: 2.5,
-        state: 'normal'
-      }],
-      commonCourse: [{
-        id: '21120261',
-        name: '软件工程',
-        credit: 2.5,
-        state: 'normal'
-      }, {
-        id: '21120262',
-        name: '软件工程',
-        credit: 2.5,
-        state: 'normal'
-      }, {
-        id: '21120263',
-        name: '软件工程',
-        credit: 2.5,
-        state: 'normal'
-      }, {
-        id: '21120264',
-        name: '软件工程',
-        credit: 2.5,
-        state: 'normal'
-      }],
-      courseList: [{
-        id: '21120261',
-        name: '软件工程',
-        credit: 2.5,
-        state: 'normal'
-      }, {
-        id: '21120262',
-        name: '软件工程',
-        credit: 2.5,
-        state: 'normal'
-      }, {
-        id: '21120263',
-        name: '软件工程',
-        credit: 2.5,
-        state: 'normal'
-      }, {
-        id: '21120264',
-        name: '软件工程',
-        credit: 2.5,
-        state: 'normal'
-      }]
+      requiredCourse: [],
+      selectiveCourse: [],
+      commonCourse: [],
+      courseList: []
     }
   },
   computed: {
@@ -193,6 +113,52 @@ export default {
     }
   },
   methods: {
+    accessProgram () {
+      // let ret = [{
+      //   id: '21120261',
+      //   name: '软件工程',
+      //   credit: 2.5,
+      //   state: 'normal'
+      // }, {
+      //   id: '21120262',
+      //   name: '软件工程',
+      //   credit: 2.5,
+      //   state: 'normal'
+      // }, {
+      //   id: '21120263',
+      //   name: '软件工程',
+      //   credit: 2.5,
+      //   state: 'normal'
+      // }, {
+      //   id: '21120264',
+      //   name: '软件工程',
+      //   credit: 2.5,
+      //   state: 'normal'
+      // }]
+      this.$axios.get('/get-program', {
+        params: {stuId: this.stuId}})
+        .then(successResponse => {
+          this.requiredCourse = []
+          this.selectiveCourse = []
+          this.commonCourse = []
+          this.requiredCDel = []
+          this.selectiveCDel = []
+          this.commonCDel = []
+          let allCourses = successResponse.data
+          for (let i = 0; i < allCourses.length; i++) {
+            if (allCourses[i].type === 0) {
+              // required
+              this.requiredCourse.push({id: allCourses[i].id, name: allCourses[i].name, credit: allCourses[i].credit, state: 'normal'})
+            } else if (allCourses[i].type === 1) {
+              // selective
+              this.selectiveCourse.push({id: allCourses[i].id, name: allCourses[i].name, credit: allCourses[i].credit, state: 'normal'})
+            } else {
+              // common
+              this.commonCourse.push({id: allCourses[i].id, name: allCourses[i].name, credit: allCourses[i].credit, state: 'normal'})
+            }
+          }
+        })
+    },
     delTableRow: function (index, tableName) {
       // if (tableName === 'requiredCourse') {
       //   this.requiredCourse.splice(index, 1)
@@ -292,7 +258,7 @@ export default {
           newId.push(newAll[i].id)
         }
       }
-      this.$axios.post('/submit-program', {stuId: this.stuId, new: newId, delete: deletedId})
+      this.$axios.post('/submit-program', {stuId: this.stuId, insert: newId, delete: deletedId})
         .then(successResponse => {
           console.log('submit success')
           this.$alert('提交成功！', '选课系统', {
@@ -315,6 +281,9 @@ export default {
       this.selectiveCDel = []
       this.requiredCDel = []
     }
+  },
+  mounted () {
+    this.accessProgram()
   }
 }
 </script>
