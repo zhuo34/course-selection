@@ -3,7 +3,7 @@
     <el-menu :default-active="this.$route.path" mode="horizontal"
              class="main-menu" router>
       <el-menu-item index="/search">课程检索</el-menu-item>
-      <el-menu-item index="/program">培养方案</el-menu-item>
+      <el-menu-item v-if="!isAdmin" index="/program">培养方案</el-menu-item>
     </el-menu>
 
     <div>
@@ -16,7 +16,12 @@
 
 <script>
 export default {
-  name: 'Home'
+  name: 'Home',
+  data () {
+    return {
+      isAdmin: true
+    }
+  }
 }
 </script>
 

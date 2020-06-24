@@ -4,7 +4,8 @@
        v-loading="searchLoading || myCourseLoading">
     <!--显示课表的按钮以及弹出的课表-->
     <el-row type="flex" justify="space-around" class="func-row">
-      <el-button v-if="!isProgramView" v-popover:tablepop
+      <el-input v-if="isAdmin" v-model="stuId" placeholder="请输入学生学号"/>
+      <el-button v-if="!isProgramView&&!isAdmin" v-popover:tablepop
                  type="primary" round @click="accessMyCourses">显示课表</el-button>
 
       <el-popover ref="tablepop" placement="bottom-start" trigger="click">
@@ -135,6 +136,7 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-button v-if="isAdmin" type="primary" @click="startFilter">开始筛选</el-button>
   </div>
 </template>
 
@@ -150,6 +152,9 @@ function SearchStruct () {
 export default {
   props: {
     isProgramView: {
+      default: false
+    },
+    isAdmin: {
       default: false
     }
   },
@@ -243,23 +248,35 @@ export default {
           })
           .finally(() => this)
       } else {
-        let interruptC = this.checkTimeValid(this.chosenCourseDetails[index].time)
-        if (interruptC !== '') {
-          this.$alert('与' + interruptC + '上课时间冲突！', '选课系统', {
-            confirmButtonText: '我知道了',
-            callback: action => {}
-          })
-          return
+        if (!this.isAdmin) {
+          let interruptC = this.checkTimeValid(this.chosenCourseDetails[index].time)
+          if (interruptC !== '') {
+            this.$alert('与' + interruptC + '上课时间冲突！', '选课系统', {
+              confirmButtonText: '我知道了',
+              callback: action => {}
+            })
+            return
+          }
+          this.$axios.post('/select-class', {classId: this.chosenCourseDetails[index].classId, stuId: this.stuId})
+            .then(successResponse => {
+              console.log('Select class success.')
+              this.accessMyCourses()
+            })
+            .catch(failResponse => {
+              console.log('fail')
+            })
+            .finally(() => this)
+        } else {
+          this.$axios.post('/admin/select-class', {classId: this.chosenCourseDetails[index].classId, stuId: this.stuId})
+            .then(successResponse => {
+              console.log('Select class success.')
+              this.accessMyCourses()
+            })
+            .catch(failResponse => {
+              console.log('fail')
+            })
+            .finally(() => this)
         }
-        this.$axios.post('/select-class', {classId: this.chosenCourseDetails[index].classId, stuId: this.stuId})
-          .then(successResponse => {
-            console.log('Select class success.')
-            this.accessMyCourses()
-          })
-          .catch(failResponse => {
-            console.log('fail')
-          })
-          .finally(() => this)
       }
       this.chosenCourseDetails[index].chosen = !this.chosenCourseDetails[index].chosen
       let isChosen = false
@@ -535,6 +552,20 @@ export default {
           this.courseTimeOptions.push('星期' + day + ' 第' + time + '节')
         }
       }
+    },
+    startFilter () {
+      // do filtering
+      this.$axios.post('/admin/filter', {})
+        .then(successResponse => {
+          this.$message({
+            message: '课程筛选完毕',
+            type: 'info'
+          })
+        })
+        .catch(failResponse => {
+          console.log('fail filtering')
+        })
+        .finally(() => this)
     }
   },
   mounted () {
