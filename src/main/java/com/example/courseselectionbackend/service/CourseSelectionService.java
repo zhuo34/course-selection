@@ -27,8 +27,8 @@ public class CourseSelectionService {
 		return queryManager.findSelectedClassInfoByStuId(stuId);
 	}
 
-	public List<Map<String, Object>> searchCourses(String stuId, String courseId, String courseName, String tName, String cTime) {
-		return queryManager.findAllCoursesByConditions(stuId, courseId, courseName, tName, cTime);
+	public List<Map<String, Object>> searchCourses(String stuId, String courseId, String courseName, String tName, String cTime, int type) {
+		return queryManager.findAllCoursesByConditions(stuId, courseId, courseName, tName, cTime, type);
 	}
 
 	@Transactional
@@ -41,6 +41,7 @@ public class CourseSelectionService {
 		HashMap<String, Object> ret = new HashMap<>();
 		ret.put("courses", queryManager.findAllProgramsOfStudent(stuId));
 		ret.put("isFinished", programState == 2);
+		ret.putAll(queryManager.findMajorRequirementByStuId(stuId));
 		return ret;
 	}
 

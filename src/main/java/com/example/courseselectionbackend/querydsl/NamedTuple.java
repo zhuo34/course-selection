@@ -17,11 +17,11 @@ public class NamedTuple {
 	}
 
 	NamedTuple(List<String> names, Tuple tuple) {
-		map = listToMap(names, Arrays.asList(tuple.toArray()));
+		map = toMap(names, tuple);
 	}
 
 	NamedTuple(List<String> names, Tuple tuple, Operator op) {
-		map = listToMap(names, Arrays.asList(tuple.toArray()));
+		map = toMap(names, tuple);
 		op.act(this);
 	}
 
@@ -55,14 +55,17 @@ public class NamedTuple {
 		return map;
 	}
 
-	public static List<Map<String, Object>> toMapList(List<Tuple> tuples, List<String> names) {
+	public static Map<String, Object> toMap(List<String> names, Tuple tuple) {
+		return listToMap(names, Arrays.asList(tuple.toArray()));
+	}
+
+	public static List<Map<String, Object>> toMapList(List<String> names, List<Tuple> tuples) {
 		return tuples.stream().map(x -> {
-			NamedTuple tuple = new NamedTuple(names, x);
-			return tuple.getMap();
+			return NamedTuple.toMap(names, x);
 		}).collect(Collectors.toList());
 	}
 
-	public static List<Map<String, Object>> toMapList(List<Tuple> tuples, List<String> names, NamedTuple.Operator op) {
+	public static List<Map<String, Object>> toMapList(List<String> names, List<Tuple> tuples, NamedTuple.Operator op) {
 		return tuples.stream().map(x -> {
 			NamedTuple tuple = new NamedTuple(names, x, op);
 			return tuple.getMap();

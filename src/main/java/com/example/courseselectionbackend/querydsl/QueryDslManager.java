@@ -47,6 +47,7 @@ public class QueryDslManager {
 	private QCourseInfo courseInfo = QCourseInfo.courseInfo;
 	private QCourseClass courseClass = QCourseClass.courseClass;
 	private QCourseSelection courseSelection = QCourseSelection.courseSelection;
+	private QMajor major = QMajor.major;
 
 	private String printTime(String[] ss) {
 		String[] weekdays = {
@@ -78,7 +79,7 @@ public class QueryDslManager {
 				.where(student.stuId.eq(stuId), student.stuId.eq(courseSelection.id.stuId), courseInfo.courseId.eq(courseClass.courseId),
 						courseSelection.id.classId.eq(courseClass.classId), courseClass.teaId.eq(teacher.teaId))
 				.fetch();
-		return NamedTuple.toMapList(tuples, names, nt -> {
+		return NamedTuple.toMapList(names, tuples, nt -> {
 			String time = nt.getObj("time").toString();
 			String[] times = time.split("_");
 			StringBuilder sb = new StringBuilder();
@@ -108,7 +109,7 @@ public class QueryDslManager {
 				.where(courseInfo.courseId.eq(courseId), courseClass.courseId.eq(courseId),
 						courseClass.teaId.eq(teacher.teaId))
 				.fetch();
-		return NamedTuple.toMapList(tuples, names, nt -> {
+		return NamedTuple.toMapList(names, tuples, nt -> {
 			int classId = (int)(nt.getObj("classId"));
 			long allSelectNum = qf().select().from(courseClass, courseSelection)
 					.where(courseClass.classId.eq(classId), courseSelection.id.classId.eq(classId))
@@ -142,7 +143,12 @@ public class QueryDslManager {
 	}
 
 	// course searching
-	public List<Map<String, Object>> findAllCoursesByConditions(String stuId, String courseId, String courseName, String tName, String cTime) {
+	public List<Map<String, Object>> findAllCoursesByConditions(String stuId,
+																String courseId,
+																String courseName,
+																String tName,
+																String cTime,
+																int type) {
 		List<String> names = new ArrayList<String>(){{
 			add("courseId"); add("courseName"); add("credits"); add("type"); add("college"); add("isSelected");
 		}};
@@ -159,6 +165,13 @@ public class QueryDslManager {
 		}
 		if (!cTime.isEmpty()) {
 			conds.add(courseClass.time.eq(cTime));
+		}
+		if (type == 0) {
+			conds.add(courseInfo.college.eq(student.stuCollege).and(courseInfo.ctype.eq(false)));
+		} else if (type == 1) {
+			conds.add(courseInfo.college.eq(student.stuCollege).and(courseInfo.ctype.eq(true)));
+		} else if (type == 2) {
+			conds.add(courseInfo.college.ne(student.stuCollege));
 		}
 		List<Tuple> tuples;
 		if (conds.isEmpty()) {
@@ -185,11 +198,12 @@ public class QueryDslManager {
 					.join(teacher).on(teacher.teaId.eq(courseClass.teaId))
 					.leftJoin(courseSelection).on(courseSelection.id.classId.eq(courseClass.classId),
 							courseSelection.id.stuId.eq(stuId))
+					.join(student).on(student.stuId.eq(stuId))
 					.where(cond)
 					.groupBy(courseInfo.courseId, courseInfo.courseName, courseInfo.courseCredits)
 					.fetch();
 		}
-		return NamedTuple.toMapList(tuples, names);
+		return NamedTuple.toMapList(names, tuples);
 	}
 
 	private String findCollegeOfStudent(String stuId) {
@@ -210,7 +224,7 @@ public class QueryDslManager {
 				.join(courseInfo)
 				.on(courseInfo.courseId.eq(program.id.courseId))
 				.fetch();
-		return NamedTuple.toMapList(courses, names, nt -> {
+		return NamedTuple.toMapList(names, courses, nt -> {
 			String stuCollege = (String) nt.getObj("scollege");
 			String courseCollege = (String) nt.getObj("ccollege");
 			if (!stuCollege.equals(courseCollege)) {
@@ -274,13 +288,28 @@ public class QueryDslManager {
 
 	// class selection
 	public void insertSelection(CourseSelection selection) {
-		System.out.println(selection.getId().getClassId());
-		System.out.println(selection.getId().getStuId());
-		System.out.println(selection.isOn());
 		courseSelectionRepository.save(selection);
 	}
 
 	public void deleteSelection(CourseSelection selection) {
 		courseSelectionRepository.delete(selection);
+	}
+
+	// major
+	public Map<String, Object> findMajorRequirementByStuId(String stuId) {
+		List<String> names = new ArrayList<String>(){{
+			add("minTotalCredit"); add("minOptionalCredit"); add("minPublicCredit");
+		}};
+		String majorName = qf()
+				.select(student.stuMajor)
+				.from(student)
+				.where(student.stuId.eq(stuId))
+				.fetchFirst();
+		Tuple t = qf()
+				.select(major.minTotalCredit, major.minOptionalCredit, major.minPublicCredit)
+				.from(major)
+				.where(major.stuMajor.eq(majorName))
+				.fetchFirst();
+		return NamedTuple.toMap(names, t);
 	}
 }

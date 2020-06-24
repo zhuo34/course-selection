@@ -32,8 +32,13 @@ public class CourseSelectionController {
 
 	@CrossOrigin
 	@GetMapping("/search-courses")
-	public List<Map<String, Object>> searchCourses(@RequestParam(defaultValue = "") String stuId, @RequestParam(defaultValue = "") String courseId, @RequestParam(defaultValue = "") String courseName, @RequestParam(defaultValue = "") String tName, @RequestParam(defaultValue = "") String cTime) {
-		return courseSelectionService.searchCourses(stuId, courseId, courseName, tName, cTime);
+	public List<Map<String, Object>> searchCourses(@RequestParam(defaultValue = "") String stuId,
+												   @RequestParam(defaultValue = "") String courseId,
+												   @RequestParam(defaultValue = "") String courseName,
+												   @RequestParam(defaultValue = "") String tName,
+												   @RequestParam(defaultValue = "") String cTime,
+													@RequestParam(defaultValue = "-1") int type) {
+		return courseSelectionService.searchCourses(stuId, courseId, courseName, tName, cTime, type);
 	}
 
 	@CrossOrigin
@@ -51,10 +56,8 @@ public class CourseSelectionController {
 	@CrossOrigin
 	@GetMapping("/is-program-finished")
 	public Map<String, Boolean> getProgramState(@RequestParam String stuId) {
-		System.out.println(stuId);
 		Map<String, Boolean> ret = new HashMap<>();
 		ret.put("isFinished", courseSelectionService.isProgramFinished(stuId));
-		System.out.println(ret.get("isFinished"));
 		return ret;
 	}
 
