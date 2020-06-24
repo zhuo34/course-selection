@@ -287,7 +287,7 @@ export default {
                 credit: item.credits.toFixed(1),
                 // college: item.college,
                 // required: item.type == '必修？'
-                college: cnt % 2 === 1? 'hhh': this.stuCollege,
+                college: cnt % 2 === 1 ? 'hhh' : this.stuCollege,
                 required: cnt % 2 === 0
               })
               cnt++

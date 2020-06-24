@@ -1,7 +1,12 @@
 <template>
     <div>
       <el-row  type="flex" justify="center" >
-        <el-col :span="2"></el-col>
+        <el-col :span="2">
+          <el-button v-popover:tablepop0 type="primary" round>添加课程</el-button>
+          <el-popover ref="tablepop0" placement="bottom-start" trigger="click">
+            <search-view :isProgramView="true" @addCourse="addNewCourse"></search-view>
+          </el-popover>
+        </el-col>
         <el-col :span="11">必修课程</el-col>
         <el-col :span="2">已选学分:{{requiredCredit}}</el-col>
         <el-col :span="1"></el-col>
@@ -24,12 +29,7 @@
         <el-col :span="2"></el-col>
         <el-col :span="11">选修课程</el-col>
         <el-col :span="2">已选学分:{{selectiveCredit}}</el-col>
-        <el-col :span="1">
-          <el-button v-popover:tablepop0 type="primary" round>添加</el-button>
-          <el-popover ref="tablepop0" placement="bottom-start" trigger="click">
-            <search-view :isProgramView="true" @addCourse="addSelectiveCourse"></search-view>
-          </el-popover>
-        </el-col>
+        <el-col :span="1"></el-col>
       </el-row>
 
       <el-table :data="selectiveCourse" border style="width: 80%; margin: auto" height="200">
@@ -47,12 +47,7 @@
         <el-col :span="2"></el-col>
         <el-col :span="11">公共课程</el-col>
         <el-col :span="2">已选学分:{{commonCredit}}</el-col>
-        <el-col :span="1">
-          <el-button v-popover:tablepop type="primary" round>添加</el-button>
-          <el-popover ref="tablepop" placement="bottom-start" trigger="click">
-            <search-view :isProgramView="true" @addCourse="addCommonCourse"></search-view>
-          </el-popover>
-        </el-col>
+        <el-col :span="1"></el-col>
       </el-row>
 
       <el-table :data="commonCourse" border style="width: 80%; margin: auto" height="200">
@@ -67,7 +62,13 @@
       </el-table>
 
       <el-row type="flex" justify="center">
-        <el-button type="success" @click="submit" plain icon="el-icon-check" size="medium">提交</el-button>
+        <el-col :span="2">
+          <el-button type="primary" @click="submit" plain icon="el-icon-s-order" size="medium">保存</el-button>
+        </el-col>
+        <el-col :span="2"></el-col>
+        <el-col :span="2">
+          <el-button type="success" @click="submit" plain icon="el-icon-check" size="medium">提交</el-button>
+        </el-col>
       </el-row>
     </div>
 </template>
@@ -190,19 +191,26 @@ export default {
         }
       }
     },
-    addSelectiveCourse (courseInfo) {
-      let key = ''
-      key = courseInfo.id
-      for (let i = 0; i < this.selectiveCDel.length; i++) {
-        if (key === this.selectiveCDel[i].id) {
-          this.selectiveCDel[i].state = 'normal'
-          this.selectiveCourse.push(this.selectiveCDel.splice(i, 1)[0])
+    addNewCourse (courseInfo) {
+      let cType = courseInfo.type
+      let cList = this.selectiveCourse
+      let cDel = this.selectiveCDel
+      if (!cType) {
+        cList = this.commonCourse
+        cDel = this.commonCDel
+      }
+      // add
+      let key = courseInfo.id
+      for (let i = 0; i < cDel.length; i++) {
+        if (key === cDel[i].id) {
+          cDel[i].state = 'normal'
+          cList.push(cDel.splice(i, 1)[0])
           return
         }
       }
       let repeated = false
-      for (let i = 0; i < this.selectiveCourse.length; i++) {
-        if (key === this.selectiveCourse[i].id) {
+      for (let i = 0; i < cList.length; i++) {
+        if (key === cList[i].id) {
           repeated = true
           break
         }
@@ -214,34 +222,8 @@ export default {
         })
       } else {
         courseInfo['state'] = 'new'
-        this.selectiveCourse.push(courseInfo)
-      }
-    },
-    addCommonCourse (courseInfo) {
-      let key = ''
-      key = courseInfo.id
-      for (let i = 0; i < this.commonCDel.length; i++) {
-        if (key === this.commonCDel[i].id) {
-          this.commonCDel[i].state = 'normal'
-          this.commonCourse.push(this.commonCDel.splice(i, 1)[0])
-          return
-        }
-      }
-      let repeated = false
-      for (let i = 0; i < this.commonCourse.length; i++) {
-        if (key === this.commonCourse[i].id) {
-          repeated = true
-          break
-        }
-      }
-      if (repeated) {
-        this.$alert('培养方案中不能添加重复的课程！', '选课系统', {
-          confirmButtonText: '我知道了',
-          callback: action => {}
-        })
-      } else {
-        courseInfo['state'] = 'new'
-        this.commonCourse.push(courseInfo)
+        delete courseInfo.type
+        cList.push(courseInfo)
       }
     },
     submit () {
