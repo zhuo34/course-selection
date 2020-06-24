@@ -227,7 +227,7 @@ export default {
           this.$message({
             message: '添加成功！',
             type: 'success'
-          });
+          })
           return
         }
       }
@@ -246,7 +246,7 @@ export default {
         this.$message({
           message: '培养方案中不能添加重复的课程！',
           type: 'error'
-        });
+        })
       } else {
         courseInfo['state'] = 'new'
         delete courseInfo.type
@@ -258,7 +258,7 @@ export default {
         this.$message({
           message: '添加成功！',
           type: 'success'
-        });
+        })
       }
     },
     clickSave () {
