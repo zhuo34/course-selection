@@ -254,6 +254,7 @@ export default {
           console.log('Drop class success.')
           this.accessMyCourses()
           this.accessSearchResults()
+          this.accessCourseDetail()
         })
         .catch(failResponse => {
           console.log('fail')
