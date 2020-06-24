@@ -234,9 +234,16 @@ export default {
           .finally(() => this)
       }
       this.chosenCourseDetails[index].chosen = !this.chosenCourseDetails[index].chosen
+      let isChosen = false
+      for (let i = 0; i < this.chosenCourseDetails.length; i++) {
+        if (this.chosenCourseDetails[i].chosen) {
+          isChosen = true
+          break
+        }
+      }
       for (let i = 0; i < this.searchResults.length; i++) {
         if (this.expands[0] === this.searchResults[i].id) {
-          this.searchResults[i].chosen = !this.searchResults[i].chosen
+          this.searchResults[i].chosen = isChosen
           break
         }
       }
