@@ -201,7 +201,7 @@ export default {
       this.expands = []
       if (expandedRows.length > 0 && row) {
         this.expands.push(row.id)
-        this.accessCourseDetail(row)
+        this.accessCourseDetail(row.id)
       }
     },
     rowClick (row, event, column) {
@@ -210,7 +210,7 @@ export default {
       this.expands = []
       if (!collapse) {
         this.expands.push(row.id)
-        this.accessCourseDetail(row)
+        this.accessCourseDetail(row.id)
       }
     },
     modifyChosen (index) {
@@ -254,7 +254,7 @@ export default {
           console.log('Drop class success.')
           this.accessMyCourses()
           this.accessSearchResults()
-          this.accessCourseDetail()
+          this.accessCourseDetail(this.expands[0])
         })
         .catch(failResponse => {
           console.log('fail')
@@ -440,13 +440,13 @@ export default {
           break
       }
     },
-    accessCourseDetail (row) {
+    accessCourseDetail (rowId) {
       this.detailLoading = true
       this.chosenCourseDetails = []
       this.key_update = Math.random()
       // let ret = []
       // console.log({'courseId': row.id, 'stuId': this.stuId})
-      this.$axios.get('/get-classes', {params: {courseId: row.id, stuId: this.stuId}})
+      this.$axios.get('/get-classes', {params: {courseId: rowId, stuId: this.stuId}})
         .then(successResponse => {
           // console.log('successResponse.data')
           console.log(successResponse.data)
