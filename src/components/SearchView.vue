@@ -157,7 +157,7 @@ export default {
       default: false
     },
     isAdmin: {
-      default: false
+      default: true
     }
   },
   name: 'SearchView',
@@ -241,9 +241,9 @@ export default {
     modifyChosen (index) {
       if (this.chosenCourseDetails[index].chosen) {
         if (!this.isAdmin) {
-          this.chosenCourseDetails[index].chosenNum++
+          this.chosenCourseDetails[index].chosenNum--
         } else {
-          this.chosenCourseDetails[index].remainNum++
+          this.chosenCourseDetails[index].remainNum--
         }
         this.$axios.post('/delete-class', {classId: this.chosenCourseDetails[index].classId, stuId: this.stuId})
           .then(successResponse => {
@@ -579,29 +579,33 @@ export default {
   },
   mounted () {
     this.searchLoading = true
-    this.$axios.get('/is-program-finished', {
-      params: {
-        stuId: this.stuId
-      }})
-      .then(successResponse => {
-        this.isFinished = successResponse.data.isFinished
-        // this.isFinished = true
+    if (this.isAdmin) {
+      this.initAccess()
+    } else {
+      this.$axios.get('/is-program-finished', {
+        params: {
+          stuId: this.stuId
+        }})
+        .then(successResponse => {
+          this.isFinished = successResponse.data.isFinished
+          // this.isFinished = true
 
-        if (!this.isProgramView && !this.isFinished) {
+          if (!this.isProgramView && !this.isFinished) {
+            this.searchLoading = false
+            this.$alert('请先确定培养方案再进行选课！', '选课系统', {
+              confirmButtonText: '我知道了',
+              callback: action => {}
+            })
+          } else {
+            this.initAccess()
+          }
+        })
+        .catch(failResponse => {
+          console.log('mounted search: fail')
           this.searchLoading = false
-          this.$alert('请先确定培养方案再进行选课！', '选课系统', {
-            confirmButtonText: '我知道了',
-            callback: action => {}
-          })
-        } else {
-          this.initAccess()
-        }
-      })
-      .catch(failResponse => {
-        console.log('mounted search: fail')
-        this.searchLoading = false
-      })
-      .finally(() => this)
+        })
+        .finally(() => this)
+    }
   }
 }
 </script>
