@@ -37,18 +37,15 @@ public class CourseSelectionService {
 		return queryManager.findAllProgramsOfStudent(stuId);
 	}
 
-	@Transactional
-	public void saveProgram(Program.Request request) {
-		queryManager.insertPrograms(request.getStuId(), request.getInsert());
-		queryManager.deletePrograms(request.getStuId(), request.getDelete());
-	}
-
 	public int getProgramState(String stuId) {
 		return queryManager.findProgramState(stuId);
 	}
 
 	@Transactional
-	public void submitProgram(String stuId) {
-		queryManager.submitProgram(stuId);
+	public void submitProgram(Program.Request request) {
+		queryManager.insertPrograms(request.getStuId(), request.getInsert());
+		queryManager.deletePrograms(request.getStuId(), request.getDelete());
+		if (request.isSubmit())
+			queryManager.submitProgram(request.getStuId());
 	}
 }

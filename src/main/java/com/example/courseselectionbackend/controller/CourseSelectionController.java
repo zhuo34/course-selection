@@ -43,15 +43,8 @@ public class CourseSelectionController {
 	}
 
 	@CrossOrigin
-	@PostMapping("/save-program")
-	public void saveProgram(@RequestBody Program.Request request) {
-		courseSelectionService.saveProgram(request);
-	}
-
-	@CrossOrigin
 	@PostMapping("/submit-program")
-	public void saveProgram(@RequestBody String stuId) {
-		courseSelectionService.submitProgram(stuId);
+	public void submitProgram(@RequestBody Program.Request request) {
+		courseSelectionService.submitProgram(request);
 	}
-
 }

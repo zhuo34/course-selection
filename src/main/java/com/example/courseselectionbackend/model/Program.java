@@ -27,5 +27,6 @@ public class Program {
 		private String stuId;
 		private List<String> insert;
 		private List<String> delete;
+		private boolean isSubmit;
 	}
 }
