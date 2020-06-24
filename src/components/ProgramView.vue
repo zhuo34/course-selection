@@ -2,7 +2,8 @@
     <div>
       <el-row  type="flex" justify="center" >
         <el-col :span="2">
-          <el-button v-popover:tablepop0 type="primary" round>添加课程</el-button>
+          <el-button v-if="!isFinished"
+                     v-popover:tablepop0 type="primary" round>添加课程</el-button>
           <el-popover ref="tablepop0" placement="bottom-start" trigger="click">
             <search-view :isProgramView="true" @addCourse="addNewCourse"></search-view>
           </el-popover>
@@ -19,7 +20,8 @@
         <el-table-column prop="credit" label="学分" align="center"></el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="danger" @click="delTableRow(scope.$index, 'requiredCourse')"
+            <el-button v-if="!isFinished"
+                       type="danger" @click="delTableRow(scope.$index, 'requiredCourse')"
                        :disabled="true">删除</el-button>
           </template>
         </el-table-column>
@@ -39,7 +41,8 @@
         <el-table-column prop="credit" label="学分" align="center"></el-table-column>
         <el-table-column prop="state" label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="danger" @click="delTableRow(scope.$index, 'selectiveCourse')">删除</el-button>
+            <el-button v-if="!isFinished"
+                       type="danger" @click="delTableRow(scope.$index, 'selectiveCourse')">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -57,18 +60,21 @@
         <el-table-column prop="credit" label="学分" align="center"></el-table-column>
         <el-table-column prop="state" label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="danger" @click="delTableRow(scope.$index, 'commonCourse')">删除</el-button>
+            <el-button v-if="!isFinished"
+                       type="danger" @click="delTableRow(scope.$index, 'commonCourse')">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
 
       <el-row type="flex" justify="center">
         <el-col :span="2">
-          <el-button type="primary" @click="clickSave" plain icon="el-icon-s-order" size="medium">保存</el-button>
+          <el-button v-if="!isFinished" type="primary" @click="clickSave"
+                     plain icon="el-icon-s-order" size="medium">保存</el-button>
         </el-col>
         <el-col :span="2"></el-col>
         <el-col :span="2">
-          <el-button type="success" @click="clickSubmit" plain icon="el-icon-check" size="medium">提交</el-button>
+          <el-button v-if="!isFinished" type="success" @click="clickSubmit" plain
+                     icon="el-icon-check" size="medium">提交</el-button>
         </el-col>
       </el-row>
     </div>

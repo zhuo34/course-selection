@@ -1,5 +1,7 @@
 <template>
-  <div v-loading="searchLoading || myCourseLoading">
+  <div v-if="!isProgramView && !isFinished">请先确定您的培养方案！</div>
+  <div v-else
+       v-loading="searchLoading || myCourseLoading">
     <!--显示课表的按钮以及弹出的课表-->
     <el-row type="flex" justify="space-around" class="func-row">
       <el-button v-if="!isProgramView" v-popover:tablepop
@@ -142,6 +144,7 @@ export default {
     return {
       stuId: '3170756898',
       stuCollege: 'Math College',
+      isFinished: false,
       searchLoading: false,
       detailLoading: false,
       myCourseLoading: false,
@@ -275,7 +278,7 @@ export default {
           cTime: info.courseTime
         }})
         .then(successResponse => {
-          console.log(successResponse.data)
+          // console.log(successResponse.data)
           this.searchResults = []
           for (let item of successResponse.data) {
             this.searchResults.push({
@@ -425,6 +428,31 @@ export default {
     }
   },
   mounted () {
+    this.searchLoading = true
+    this.$axios.get('/search-courses', {
+      params: {}})
+      .then(successResponse => {
+        // console.log(successResponse.data)
+        // this.isFinished = successResponse.data
+        this.isFinished = true
+
+        if (!this.isProgramView && !this.isFinished) {
+          this.searchLoading = false
+          this.$alert('请先确定培养方案再进行选课！', '选课系统', {
+            confirmButtonText: '我知道了',
+            callback: action => {}
+          })
+        } else {
+          this.initAccess()
+        }
+      })
+      .catch(failResponse => {
+        console.log('mounted search: fail')
+        this.searchLoading = false
+      })
+      .finally(() => this)
+  },
+  initAccess () {
     this.accessSearchResults()
     this.accessMyCourses()
 
