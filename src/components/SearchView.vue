@@ -30,6 +30,7 @@
             </template>
           </el-table-column>
           <el-table-column prop="cid" label="课程号" align="center"/>
+          <el-table-column prop="cname" label="课程名称" align="center"/>
           <el-table-column prop="tname" label="教师" align="center"/>
           <el-table-column prop="printTime" label="上课时间" align="center"/>
           <el-table-column prop="place" label="上课地点" align="center"/>
@@ -235,15 +236,25 @@ export default {
         this.$axios.post('/delete-class', {classId: this.chosenCourseDetails[index].classId, stuId: this.stuId})
           .then(successResponse => {
             console.log('Drop class success.')
+            this.accessMyCourses()
           })
           .catch(failResponse => {
             console.log('fail')
           })
           .finally(() => this)
       } else {
+        let interruptC = this.checkTimeValid(this.chosenCourseDetails[index].time)
+        if (interruptC !== '') {
+          this.$alert('与' + interruptC + '上课时间冲突！', '选课系统', {
+            confirmButtonText: '我知道了',
+            callback: action => {}
+          })
+          return
+        }
         this.$axios.post('/select-class', {classId: this.chosenCourseDetails[index].classId, stuId: this.stuId})
           .then(successResponse => {
             console.log('Select class success.')
+            this.accessMyCourses()
           })
           .catch(failResponse => {
             console.log('fail')
@@ -277,6 +288,20 @@ export default {
           console.log('fail')
         })
         .finally(() => this)
+    },
+    checkTimeValid (timeDic) {
+      for (let i = 0; i < timeDic.length; i++) {
+        for (let j = 0; j < this.myCourses.length; j++) {
+          for (let k = 0; k < this.myCourses[j].time.length; k++) {
+            let selTime = timeDic[i]
+            let cmpTime = this.myCourses[j].time[k]
+            if (selTime.weekday === cmpTime.weekday && selTime.begin === cmpTime.begin) {
+              return this.myCourses[j].cname
+            }
+          }
+        }
+      }
+      return ''
     },
     searchTitleChange (id) {
       if (id === 1) this.searchInfo1 = ''
