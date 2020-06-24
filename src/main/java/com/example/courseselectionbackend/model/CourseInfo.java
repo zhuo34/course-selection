@@ -30,12 +30,9 @@ public class CourseInfo {
 	@Column(name = "cexammode", length = 40, nullable = false)
 	private String courseExamMode;
 
+	@Column(name = "ccollege", length = 40)
+	private String college;
+
 	@Column(name = "ctype", nullable = false)
 	private boolean ctype;
-
-//	@OneToMany(mappedBy = "courseInfo")
-//	private Set<CourseClass> courseClasses;
-//
-//	@OneToMany(mappedBy = "course")
-//	private Set<Program> programs;
 }

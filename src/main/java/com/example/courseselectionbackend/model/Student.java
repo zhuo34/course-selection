@@ -40,7 +40,7 @@ public class Student {
 	private String stuEmail;
 
 	@Column(name = "sprogram")
-	private Boolean stuProgramConfirmed;
+	private int stuProgramConfirmed;
 
 	@Lob
 	@Basic(fetch = FetchType.LAZY)

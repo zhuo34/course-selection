@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Builder
@@ -19,13 +20,12 @@ public class Program {
 	@EmbeddedId
 	private ProgramPK id;
 
-//	@ManyToOne
-//	@MapsId("sid")
-//	@JoinColumn(name = "sid", foreignKey = @ForeignKey(name = "fk10"), nullable = false)
-//	private Student student;
-
-//	@ManyToOne
-//	@MapsId("cid")
-//	@JoinColumn(name = "cid", foreignKey = @ForeignKey(name = "fk11"), nullable = false)
-//	private CourseInfo course;
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	static public class Request {
+		private String stuId;
+		private List<String> insert;
+		private List<String> delete;
+	}
 }

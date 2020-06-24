@@ -1,6 +1,7 @@
 package com.example.courseselectionbackend.querydsl;
 
 import com.example.courseselectionbackend.model.*;
+import com.example.courseselectionbackend.model.primarykey.ProgramPK;
 import com.example.courseselectionbackend.repository.CourseSelectionRepository;
 import com.example.courseselectionbackend.repository.ProgramRepository;
 import com.querydsl.core.Tuple;
@@ -9,6 +10,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.jpa.impl.JPAUpdateClause;
 import org.hibernate.SQLQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,22 +28,6 @@ public class QueryDslManager {
 
 	@Autowired
 	private ProgramRepository programRepository;
-
-	public void saveCourseSelection(CourseSelection courseSelection) {
-		courseSelectionRepository.save(courseSelection);
-	}
-
-	public void saveCourseSelection(List<CourseSelection> courseSelection) {
-		courseSelectionRepository.saveAll(courseSelection);
-	}
-
-	public void saveProgram(Program program) {
-		programRepository.save(program);
-	}
-
-	public void saveProgram(List<Program> program) {
-		programRepository.saveAll(program);
-	}
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -79,6 +65,7 @@ public class QueryDslManager {
 		return sb.toString();
 	}
 
+	// course class
 	public List<Map<String, Object>> findSelectedClassInfoByStuId(String stuId) {
 		List<String> names = new ArrayList<String>(){{
 			add("isOn"); add("cid"); add("tname"); add("time"); add("place"); add("cname");
@@ -152,9 +139,10 @@ public class QueryDslManager {
 		});
 	}
 
+	// course searching
 	public List<Map<String, Object>> findAllCoursesByConditions(String stuId, String courseId, String courseName, String tName, String cTime) {
 		List<String> names = new ArrayList<String>(){{
-			add("courseId"); add("courseName"); add("credits"); add("isSelected");
+			add("courseId"); add("courseName"); add("credits"); add("type"); add("college"); add("isSelected");
 		}};
 
 		ArrayList<BooleanExpression> conds = new ArrayList<>();
@@ -173,11 +161,13 @@ public class QueryDslManager {
 		List<Tuple> tuples;
 		if (conds.isEmpty()) {
 			tuples = qf()
-					.select(courseInfo.courseId, courseInfo.courseName, courseInfo.courseCredits, courseSelection.isOn.castToNum(Integer.class).max())
+					.select(courseInfo.courseId, courseInfo.courseName, courseInfo.courseCredits,
+							courseInfo.ctype, courseInfo.college, courseSelection.isOn.castToNum(Integer.class).max())
 					.from(courseInfo)
+					.join(program).on(program.id.stuId.eq(stuId), program.id.courseId.eq(courseInfo.courseId))
 					.join(courseClass).on(courseClass.courseId.eq(courseInfo.courseId))
-					.join(courseSelection).on(courseSelection.id.classId.eq(courseClass.classId), courseSelection.id.stuId.eq(stuId))
-					.join(program).on(program.id.stuId.eq(stuId))
+					.join(courseSelection).on(courseSelection.id.classId.eq(courseClass.classId),
+							courseSelection.id.stuId.eq(program.id.stuId))
 					.groupBy(courseInfo.courseId, courseInfo.courseName, courseInfo.courseCredits)
 					.fetch();
 		} else {
@@ -198,4 +188,87 @@ public class QueryDslManager {
 		return NamedTuple.toMapList(tuples, names);
 	}
 
+	private String findCollegeOfStudent(String stuId) {
+		List<String> ret = qf().select(student.stuCollege).from(student).where(student.stuId.eq(stuId)).fetch();
+		return ret.get(0);
+	}
+
+	// program
+	public List<Map<String, Object>> findAllProgramsOfStudent(String stuId) {
+		if (findProgramState(stuId) == 0) {
+			insertCompulsoryCourses(stuId);
+			startProgram(stuId);
+		}
+		List<String> names = new ArrayList<String>(){{
+			add("id"); add("name"); add("credit"); add("type"); add("ccollege"); add("scollege");
+		}};
+		List<Tuple> courses = qf()
+				.select(courseInfo.courseId, courseInfo.courseName, courseInfo.courseCredits,
+						courseInfo.ctype, courseInfo.college, student.stuCollege)
+				.from(program)
+				.join(student).on(program.id.stuId.eq(stuId), student.stuId.eq(program.id.stuId))
+				.join(courseInfo)
+				.on(courseInfo.courseId.eq(program.id.courseId))
+				.fetch();
+		return NamedTuple.toMapList(courses, names, nt -> {
+			String stuCollege = (String) nt.getObj("scollege");
+			String courseCollege = (String) nt.getObj("ccollege");
+			if (!stuCollege.equals(courseCollege)) {
+				nt.replace("type", 2);
+			} else {
+				boolean type = (boolean) nt.getObj("type");
+				nt.replace("type", type ? 1 : 0);
+			}
+			nt.remove("scollege");
+			nt.remove("ccollege");
+		});
+	}
+
+	public int findProgramState(String stuId) {
+		return qf()
+			.select(student.stuProgramConfirmed)
+			.from(student)
+			.where(student.stuId.eq(stuId))
+			.fetchFirst();
+	}
+
+	public void startProgram(String stuId) {
+		new JPAUpdateClause(entityManager, student)
+				.where(student.stuId.eq(stuId))
+				.set(student.stuProgramConfirmed, 1)
+				.execute();
+	}
+
+	public void submitProgram(String stuId) {
+		new JPAUpdateClause(entityManager, student)
+				.where(student.stuId.eq(stuId))
+				.set(student.stuProgramConfirmed, 2)
+				.execute();
+	}
+
+	private void insertCompulsoryCourses(String stuId) {
+		List<String> courses = qf()
+				.select(courseInfo.courseId)
+				.from(courseInfo)
+				.join(student)
+				.on(student.stuId.eq(stuId), student.stuCollege.eq(courseInfo.college))
+				.fetch();
+		insertPrograms(stuId, courses);
+	}
+
+	public void insertPrograms(String stuId, List<String> courseId) {
+		List<Program> programs = courseId.stream().map(cid -> {
+			ProgramPK id = ProgramPK.builder().courseId(cid).stuId(stuId).build();
+			return Program.builder().id(id).build();
+		}).collect(Collectors.toList());
+		programRepository.saveAll(programs);
+	}
+
+	public void deletePrograms(String stuId, List<String> courseId) {
+		List<Program> programs = courseId.stream().map(cid -> {
+			ProgramPK id = ProgramPK.builder().courseId(cid).stuId(stuId).build();
+			return Program.builder().id(id).build();
+		}).collect(Collectors.toList());
+		programRepository.deleteAll(programs);
+	}
 }
