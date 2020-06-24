@@ -1,6 +1,7 @@
 package com.example.courseselectionbackend.querydsl;
 
 import com.example.courseselectionbackend.model.*;
+import com.example.courseselectionbackend.model.primarykey.CourseSelectionPK;
 import com.example.courseselectionbackend.model.primarykey.ProgramPK;
 import com.example.courseselectionbackend.repository.CourseSelectionRepository;
 import com.example.courseselectionbackend.repository.ProgramRepository;
@@ -69,9 +70,9 @@ public class QueryDslManager {
 	// course class
 	public List<Map<String, Object>> findSelectedClassInfoByStuId(String stuId) {
 		List<String> names = new ArrayList<String>(){{
-			add("isOn"); add("cid"); add("tname"); add("time"); add("place"); add("cname");
+			add("classId"); add("isOn"); add("cid"); add("tname"); add("time"); add("place"); add("cname");
 		}};
-		List<Tuple> tuples = qf().select(courseSelection.isOn, courseClass.courseId, teacher.teaName,
+		List<Tuple> tuples = qf().select(courseClass.classId, courseSelection.isOn, courseClass.courseId, teacher.teaName,
 					courseClass.time, courseClass.place, courseInfo.courseName)
 				.from(courseSelection, student, courseClass, teacher, courseInfo)
 				.where(student.stuId.eq(stuId), student.stuId.eq(courseSelection.id.stuId), courseInfo.courseId.eq(courseClass.courseId),
@@ -98,7 +99,7 @@ public class QueryDslManager {
 
 	public List<Map<String, Object>> findClassInfoByCourseId(String courseId, String stuId) {
 		List<String> names = new ArrayList<String>(){{
-			add("classid"); add("teacher"); add("courseTime"); add("coursePlace"); add("totalNum"); add("examTime");
+			add("classId"); add("teacher"); add("courseTime"); add("coursePlace"); add("totalNum"); add("examTime");
 		}};
 
 		List<Tuple> tuples = qf().select(courseClass.classId, teacher.teaName,
@@ -108,7 +109,7 @@ public class QueryDslManager {
 						courseClass.teaId.eq(teacher.teaId))
 				.fetch();
 		return NamedTuple.toMapList(tuples, names, nt -> {
-			int classId = (int)(nt.getObj("classid"));
+			int classId = (int)(nt.getObj("classId"));
 			long allSelectNum = qf().select().from(courseClass, courseSelection)
 					.where(courseClass.classId.eq(classId), courseSelection.id.classId.eq(classId))
 					.fetchCount();
@@ -122,7 +123,7 @@ public class QueryDslManager {
 			}
 			long haveSelected = qf().select().from(courseClass)
 					.join(courseSelection)
-					.on(courseSelection.id.stuId.eq(stuId))
+					.on(courseSelection.id.stuId.eq(stuId), courseSelection.id.classId.eq(classId))
 					.fetchCount();
 			nt.add("remainNum", capacity - haveSelectedNum);
 			nt.add("chosenNum", allSelectNum - haveSelectedNum);
@@ -269,5 +270,17 @@ public class QueryDslManager {
 			return Program.builder().id(id).build();
 		}).collect(Collectors.toList());
 		programRepository.deleteAll(programs);
+	}
+
+	// class selection
+	public void insertSelection(CourseSelection selection) {
+		System.out.println(selection.getId().getClassId());
+		System.out.println(selection.getId().getStuId());
+		System.out.println(selection.isOn());
+		courseSelectionRepository.save(selection);
+	}
+
+	public void deleteSelection(CourseSelection selection) {
+		courseSelectionRepository.delete(selection);
 	}
 }

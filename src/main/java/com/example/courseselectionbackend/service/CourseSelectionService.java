@@ -1,7 +1,9 @@
 package com.example.courseselectionbackend.service;
 
+import com.example.courseselectionbackend.model.CourseSelection;
 import com.example.courseselectionbackend.model.Program;
 import com.example.courseselectionbackend.model.Student;
+import com.example.courseselectionbackend.model.primarykey.CourseSelectionPK;
 import com.example.courseselectionbackend.querydsl.QueryDslManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,11 +44,25 @@ public class CourseSelectionService {
 		return ret;
 	}
 
+	public boolean isProgramFinished(String stuId) {
+		return queryManager.findProgramState(stuId) == 2;
+	}
+
 	@Transactional
 	public void submitProgram(Program.Request request) {
 		queryManager.insertPrograms(request.getStuId(), request.getInsert());
 		queryManager.deletePrograms(request.getStuId(), request.getDelete());
 		if (request.isSubmit())
 			queryManager.submitProgram(request.getStuId());
+	}
+
+	@Transactional
+	public void selectClass(CourseSelectionPK id) {
+		queryManager.insertSelection(CourseSelection.builder().id(id).build());
+	}
+
+	@Transactional
+	public void deleteClass(CourseSelectionPK id) {
+		queryManager.deleteSelection(CourseSelection.builder().id(id).build());
 	}
 }

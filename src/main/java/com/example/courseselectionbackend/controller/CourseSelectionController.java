@@ -1,10 +1,13 @@
 package com.example.courseselectionbackend.controller;
 
+import com.example.courseselectionbackend.model.CourseSelection;
 import com.example.courseselectionbackend.model.Program;
+import com.example.courseselectionbackend.model.primarykey.CourseSelectionPK;
 import com.example.courseselectionbackend.service.CourseSelectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,10 +19,8 @@ public class CourseSelectionController {
 	CourseSelectionService courseSelectionService;
 
 	@CrossOrigin
-	@PostMapping("/get-classes")
-	public List<Map<String, Object>> getClassesOfCourse(@RequestBody Map<String, Object> params) {
-		String courseId = params.get("courseId").toString();
-		String stuId = params.get("stuId").toString();
+	@GetMapping("/get-classes")
+	public List<Map<String, Object>> getClassesOfCourse(@RequestParam String courseId, @RequestParam String stuId) {
 		return courseSelectionService.getClassesOfCourse(courseId, stuId);
 	}
 
@@ -45,5 +46,27 @@ public class CourseSelectionController {
 	@PostMapping("/submit-program")
 	public void submitProgram(@RequestBody Program.Request request) {
 		courseSelectionService.submitProgram(request);
+	}
+
+	@CrossOrigin
+	@GetMapping("/is-program-finished")
+	public Map<String, Boolean> getProgramState(@RequestParam String stuId) {
+		System.out.println(stuId);
+		Map<String, Boolean> ret = new HashMap<>();
+		ret.put("isFinished", courseSelectionService.isProgramFinished(stuId));
+		System.out.println(ret.get("isFinished"));
+		return ret;
+	}
+
+	@CrossOrigin
+	@PostMapping("/select-class")
+	public void selectClass(@RequestBody CourseSelectionPK id) {
+		courseSelectionService.selectClass(id);
+	}
+
+	@CrossOrigin
+	@PostMapping("/delete-class")
+	public void deleteClass(@RequestBody CourseSelectionPK id) {
+		courseSelectionService.deleteClass(id);
 	}
 }

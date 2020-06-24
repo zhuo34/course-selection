@@ -25,8 +25,13 @@ public class Program {
 	@AllArgsConstructor
 	static public class Request {
 		private String stuId;
+		private int isSubmit;
 		private List<String> insert;
 		private List<String> delete;
-		private boolean isSubmit;
+
+		public boolean isSubmit() {
+			System.out.println(isSubmit);
+			return isSubmit == 1;
+		}
 	}
 }
