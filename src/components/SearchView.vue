@@ -141,7 +141,7 @@ export default {
   data () {
     return {
       stuId: '3170756898',
-      stuDepartment: 'CS',
+      stuCollege: 'Math College',
       searchLoading: false,
       detailLoading: false,
       myCourseLoading: false,
@@ -451,7 +451,8 @@ export default {
       // console.log(this.chosenCourseDetails)
     },
     programAddC (index) {
-      this.$emit('addCourse', {id: this.searchResults[index].id, name: this.searchResults[index].name, credit: parseFloat(this.searchResults[index].credit)})
+      let cType = this.searchResults[index].college === this.stuCollege
+      this.$emit('addCourse', {id: this.searchResults[index].id, name: this.searchResults[index].name, credit: parseFloat(this.searchResults[index].credit), type: cType})
     }
   },
   mounted () {
