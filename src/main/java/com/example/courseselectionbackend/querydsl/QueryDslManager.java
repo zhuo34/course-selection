@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -195,10 +196,6 @@ public class QueryDslManager {
 
 	// program
 	public List<Map<String, Object>> findAllProgramsOfStudent(String stuId) {
-		if (findProgramState(stuId) == 0) {
-			insertCompulsoryCourses(stuId);
-			startProgram(stuId);
-		}
 		List<String> names = new ArrayList<String>(){{
 			add("id"); add("name"); add("credit"); add("type"); add("ccollege"); add("scollege");
 		}};
@@ -246,7 +243,7 @@ public class QueryDslManager {
 				.execute();
 	}
 
-	private void insertCompulsoryCourses(String stuId) {
+	public void insertCompulsoryCourses(String stuId) {
 		List<String> courses = qf()
 				.select(courseInfo.courseId)
 				.from(courseInfo)

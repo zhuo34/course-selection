@@ -28,7 +28,12 @@ public class CourseSelectionService {
 		return queryManager.findAllCoursesByConditions(stuId, courseId, courseName, tName, cTime);
 	}
 
+	@Transactional
 	public List<Map<String, Object>> getPrograms(String stuId) {
+		if (getProgramState(stuId) == 0) {
+			queryManager.insertCompulsoryCourses(stuId);
+			queryManager.startProgram(stuId);
+		}
 		return queryManager.findAllProgramsOfStudent(stuId);
 	}
 
@@ -36,6 +41,10 @@ public class CourseSelectionService {
 	public void saveProgram(Program.Request request) {
 		queryManager.insertPrograms(request.getStuId(), request.getInsert());
 		queryManager.deletePrograms(request.getStuId(), request.getDelete());
+	}
+
+	public int getProgramState(String stuId) {
+		return queryManager.findProgramState(stuId);
 	}
 
 	@Transactional
