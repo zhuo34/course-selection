@@ -303,6 +303,9 @@ export default {
             confirmButtonText: '确定',
             callback: action => {}
           })
+          if (isSubmit) {
+            this.accessProgram()
+          }
         })
         .catch(failResponse => {
           console.log('fail')
