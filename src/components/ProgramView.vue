@@ -240,7 +240,7 @@ export default {
       }
     },
     clickSave () {
-      this.submit(false)
+      this.submit(0)
     },
     clickSubmit () {
       this.$confirm('提交之后将不能修改培养方案，是否提交？', '提示', {
@@ -248,7 +248,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.submit(true)
+        this.submit(1)
       }).catch(() => {})
     },
     submit (isSubmit) {
@@ -265,6 +265,7 @@ export default {
           newId.push(newAll[i].id)
         }
       }
+      console.log(isSubmit)
       this.$axios.post('/submit-program', {stuId: this.stuId, isSubmit: isSubmit, insert: newId, delete: deletedId})
         .then(successResponse => {
           console.log('submit success')

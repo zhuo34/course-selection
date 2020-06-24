@@ -5,7 +5,7 @@
     <!--显示课表的按钮以及弹出的课表-->
     <el-row type="flex" justify="space-around" class="func-row">
       <el-button v-if="!isProgramView" v-popover:tablepop
-                 type="primary" round>显示课表</el-button>
+                 type="primary" round @click="accessMyCourses">显示课表</el-button>
 
       <el-popover ref="tablepop" placement="bottom-start" trigger="click">
         <el-table :data="courseTable" style="width: 100%" border
@@ -430,10 +430,10 @@ export default {
       this.key_update = Math.random()
       // let ret = []
       // console.log({'courseId': row.id, 'stuId': this.stuId})
-      this.$axios.post('/get-classes', {courseId: row.id, stuId: this.stuId})
+      this.$axios.get('/get-classes', {params: {courseId: row.id, stuId: this.stuId}})
         .then(successResponse => {
           // console.log('successResponse.data')
-          // console.log(successResponse.data)
+          console.log(successResponse.data)
           this.chosenCourseDetails = successResponse.data
           this.detailLoading = false
           this.key_update = Math.random()
@@ -451,6 +451,19 @@ export default {
     programAddC (index) {
       let cType = this.searchResults[index].college === this.stuCollege
       this.$emit('addCourse', {id: this.searchResults[index].id, name: this.searchResults[index].name, credit: parseFloat(this.searchResults[index].credit), type: cType})
+    },
+    initAccess () {
+      this.accessSearchResults()
+      // this.accessMyCourses()
+
+      // init courseTimeOptions
+      let days = ['一', '二', '三', '四', '五', '六', '日']
+      let times = ['1,2', '3,4', '3,4,5', '6,7,8', '7,8', '9,10', '11,12', '11,12,13']
+      for (let day of days) {
+        for (let time of times) {
+          this.courseTimeOptions.push('星期' + day + ' 第' + time + '节')
+        }
+      }
     }
   },
   mounted () {
@@ -460,7 +473,7 @@ export default {
         stuId: this.stuId
       }})
       .then(successResponse => {
-        this.isFinished = successResponse.data
+        this.isFinished = successResponse.data.isFinished
         // this.isFinished = true
 
         if (!this.isProgramView && !this.isFinished) {
@@ -478,19 +491,6 @@ export default {
         this.searchLoading = false
       })
       .finally(() => this)
-  },
-  initAccess () {
-    this.accessSearchResults()
-    this.accessMyCourses()
-
-    // init courseTimeOptions
-    let days = ['一', '二', '三', '四', '五', '六', '日']
-    let times = ['1,2', '3,4', '3,4,5', '6,7,8', '7,8', '9,10', '11,12', '11,12,13']
-    for (let day of days) {
-      for (let time of times) {
-        this.courseTimeOptions.push('星期' + day + ' 第' + time + '节')
-      }
-    }
   }
 }
 </script>
